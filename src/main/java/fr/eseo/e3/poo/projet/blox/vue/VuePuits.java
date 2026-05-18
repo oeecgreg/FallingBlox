@@ -4,19 +4,21 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JPanel;
 
 import fr.eseo.e3.poo.projet.blox.modele.Puits;
+import fr.eseo.e3.poo.projet.blox.modele.pieces.Piece;
 
-public class VuePuits extends JPanel {
+// La classe implémente désormais formellement le contrat PropertyChangeListener
+public class VuePuits extends JPanel implements PropertyChangeListener {
 
     public static final int TAILLE_PAR_DEFAUT = 20;
 
     private Puits puits;
     private int taille;
-
-    // Nouvelle variable d'instance pour créer l'association avec VuePiece
     private VuePiece vuePiece;
 
     // --- Constructeurs ---
@@ -28,12 +30,15 @@ public class VuePuits extends JPanel {
     public VuePuits(Puits puits, int taille) {
         this.puits = puits;
         this.taille = taille;
-
-        // Consigne : Après la construction, il n'y a aucune VuePiece associée
         this.vuePiece = null;
 
         this.setBackground(Color.WHITE);
         this.mettreAJourTaille();
+
+        // Inscription de la vue auprès du puits initial s'il existe
+        if (this.puits != null) {
+            this.puits.addPropertyChangeListener(this);
+        }
     }
 
     // --- Accesseurs et Mutateurs ---
@@ -43,7 +48,18 @@ public class VuePuits extends JPanel {
     }
 
     public void setPuits(Puits puits) {
+        // Désinscription auprès de l'ancien Puits si nécessaire
+        if (this.puits != null) {
+            this.puits.removePropertyChangeListener(this);
+        }
+
         this.puits = puits;
+
+        // Inscription auprès du nouveau Puits
+        if (this.puits != null) {
+            this.puits.addPropertyChangeListener(this);
+        }
+
         this.mettreAJourTaille();
     }
 
@@ -56,19 +72,16 @@ public class VuePuits extends JPanel {
         this.mettreAJourTaille();
     }
 
-    // Accesseur pour récupérer la VuePiece associée
     public VuePiece getVuePiece() {
         return this.vuePiece;
     }
 
-    // Mutateur pour associer une VuePiece
-    public void setVuePiece(VuePiece vuePiece) {
+    // Exigence : Visibilité modifiée en 'private' pour sécuriser l'encapsulation
+    private void setVuePiece(VuePiece vuePiece) {
         this.vuePiece = vuePiece;
+        this.repaint(); // Force le rafraîchissement graphique immédiat de l'écran
     }
 
-    /**
-     * Méthode utilitaire privée pour recalculer et appliquer la taille de préférence.
-     */
     private void mettreAJourTaille() {
         if (this.puits != null) {
             int largeurPixels = this.puits.getLargeur() * this.taille;
@@ -77,37 +90,45 @@ public class VuePuits extends JPanel {
         }
     }
 
-    // --- Dessin du composant ---
+    // --- Réception Automatique des Notifications ---
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        // On vérifie si la notification concerne un changement de la pièce actuelle
+        if (Puits.MODIFICATION_PIECE_ACTUELLE.equals(evt.getPropertyName())) {
+            Piece nouvellePieceActuelle = (Piece) evt.getNewValue();
 
+            if (nouvellePieceActuelle != null) {
+                // Création automatique de la VuePiece adaptée
+                this.setVuePiece(new VuePiece(nouvellePieceActuelle, this.taille));
+            } else {
+                this.setVuePiece(null);
+            }
+        }
+    }
+
+    // --- Dessin du composant ---
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g); // Remplit le fond en blanc
+        super.paintComponent(g);
 
-        /* Création de la copie de type Graphics2D */
         Graphics2D g2D = (Graphics2D) g.create();
-
-        /* 1. Affichage de la grille de couleur gris clair */
         g2D.setColor(Color.LIGHT_GRAY);
 
         int largeurMax = this.puits.getLargeur() * this.taille;
         int profondeurMax = this.puits.getProfondeur() * this.taille;
 
-        // Tracé des lignes verticales
         for (int x = 0; x <= largeurMax; x += this.taille) {
             g2D.drawLine(x, 0, x, profondeurMax);
         }
 
-        // Tracé des lignes horizontales
         for (int y = 0; y <= profondeurMax; y += this.taille) {
             g2D.drawLine(0, y, largeurMax, y);
         }
 
-        /* 2. Dessin de la VuePiece associée (seulement s'il y en a une) */
         if (this.vuePiece != null) {
             this.vuePiece.afficherPiece(g2D);
         }
 
-        /* Libération de la mémoire */
         g2D.dispose();
     }
 }

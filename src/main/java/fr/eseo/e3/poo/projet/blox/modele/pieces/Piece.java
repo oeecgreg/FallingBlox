@@ -18,4 +18,12 @@ public interface Piece {
     Puits getPuits();
 
     void setPuits(fr.eseo.e3.poo.projet.blox.modele.Puits puits);
+
+    /**
+     * Déplace la pièce entière si le vecteur de déplacement est valide.
+     * @param deltax Déplacement horizontal (-1, 0 ou 1)
+     * @param deltay Déplacement vertical (0 ou 1)
+     * @throws IllegalArgumentException si le déplacement est invalide (ex : vers le haut, ou trop grand).
+     */
+    void deplacerDe(int deltax, int deltay) throws IllegalArgumentException;
 }

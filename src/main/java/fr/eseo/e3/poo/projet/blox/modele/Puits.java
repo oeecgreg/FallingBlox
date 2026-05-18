@@ -1,12 +1,17 @@
 package fr.eseo.e3.poo.projet.blox.modele;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import fr.eseo.e3.poo.projet.blox.modele.pieces.Piece;
 
 public class Puits {
 
-    // Constantes par défaut (souvent 10x20 ou 10x15 dans les sujets Tetris)
     public static final int LARGEUR_PAR_DEFAUT = 10;
     public static final int PROFONDEUR_PAR_DEFAUT = 15;
+
+    // Constantes d'identification des propriétés modifiées
+    public static final String MODIFICATION_PIECE_ACTUELLE = "pieceActuelle";
+    public static final String MODIFICATION_PIECE_SUIVANTE = "pieceSuivante";
 
     private int largeur;
     private int profondeur;
@@ -14,17 +19,31 @@ public class Puits {
     private Piece pieceActuelle;
     private Piece pieceSuivante;
 
+    // Gestionnaire de notification de changement de propriété
+    private final PropertyChangeSupport pcs;
+
     // --- Constructeurs ---
     public Puits() {
         this(LARGEUR_PAR_DEFAUT, PROFONDEUR_PAR_DEFAUT);
     }
 
     public Puits(int largeur, int profondeur) {
+        // Initialisation obligatoire de PropertyChangeSupport en passant 'this'
+        this.pcs = new PropertyChangeSupport(this);
         this.setLargeur(largeur);
         this.setProfondeur(profondeur);
     }
 
-    // --- Accesseurs et Mutateurs basiques ---
+    // --- Gestion des Écouteurs (Delegation vers pcs) ---
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.removePropertyChangeListener(listener);
+    }
+
+    // --- Accesseurs et Mutateurs ---
     public int getLargeur() {
         return largeur;
     }
@@ -55,24 +74,29 @@ public class Puits {
         return pieceSuivante;
     }
 
-    // --- Logique métier : setPieceSuivante ---
+    // --- Logique métier avec Notifications ---
     public void setPieceSuivante(Piece piece) {
+        // 1. Sauvegarde des anciennes valeurs avant modification
+        Piece ancienneActuelle = this.pieceActuelle;
+        Piece ancienneSuivante = this.pieceSuivante;
+
+        // 2. Traitement métier de base
         if (this.pieceSuivante != null) {
-            // L'ancienne pièce suivante devient la pièce actuelle
             this.pieceActuelle = this.pieceSuivante;
-            // On la place en haut au milieu selon les consignes du sujet : (largeur/2, -4)
             this.pieceActuelle.setPositions(this.largeur / 2, -4);
         }
 
-        // On assigne la nouvelle pièce suivante
         this.pieceSuivante = piece;
 
         if (this.pieceSuivante != null) {
             this.pieceSuivante.setPuits(this);
         }
+
+        // 3. Déclenchement des notifications si des changements ont eu lieu
+        this.pcs.firePropertyChange(MODIFICATION_PIECE_ACTUELLE, ancienneActuelle, this.pieceActuelle);
+        this.pcs.firePropertyChange(MODIFICATION_PIECE_SUIVANTE, ancienneSuivante, this.pieceSuivante);
     }
 
-    // --- Redéfinition (Format strict) ---
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -82,15 +106,14 @@ public class Puits {
         if (this.pieceActuelle == null) {
             sb.append("<aucune>\n");
         } else {
-            sb.append(this.pieceActuelle).append("\n");
+            sb.append(this.pieceActuelle.toString()).append("\n");
         }
 
         sb.append("Piece Suivante : ");
         if (this.pieceSuivante == null) {
             sb.append("<aucune>");
         } else {
-            // Pas de \n à la fin de la dernière ligne
-            sb.append(this.pieceSuivante);
+            sb.append(this.pieceSuivante.toString());
         }
 
         return sb.toString();

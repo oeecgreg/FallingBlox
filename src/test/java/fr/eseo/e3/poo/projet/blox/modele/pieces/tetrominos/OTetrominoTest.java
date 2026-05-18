@@ -1,6 +1,8 @@
 package fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.Test;
 import fr.eseo.e3.poo.projet.blox.modele.Coordonnees;
 import fr.eseo.e3.poo.projet.blox.modele.Couleur;
@@ -55,5 +57,29 @@ public class OTetrominoTest {
                 "\t(7, 4) - CYAN";
 
         assertEquals(attendu, oTetromino.toString(), "Le format de toString ne correspond pas à l'énoncé");
+    }
+
+    @Test
+    public void testDeplacerDeValide() {
+        OTetromino piece = new OTetromino(new Coordonnees(5, 5), Couleur.ROUGE);
+
+        // Déplacement vers la gauche
+        piece.deplacerDe(-1, 0);
+
+        // Le pivot (en haut à gauche du carré O) doit passer de X=5 à X=4.
+        assertEquals(4, piece.getElements()[0].getCoordonnees().getAbscisse());
+        assertEquals(5, piece.getElements()[0].getCoordonnees().getOrdonnee());
+    }
+
+    @Test
+    public void testDeplacerDeInvalideVersLeHaut() {
+        OTetromino piece = new OTetromino(new Coordonnees(5, 5), Couleur.ROUGE);
+        assertThrows(IllegalArgumentException.class, () -> piece.deplacerDe(0, -1));
+    }
+
+    @Test
+    public void testDeplacerDeInvalideDiagonale() {
+        OTetromino piece = new OTetromino(new Coordonnees(5, 5), Couleur.ROUGE);
+        assertThrows(IllegalArgumentException.class, () -> piece.deplacerDe(-1, 1));
     }
 }

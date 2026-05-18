@@ -17,6 +17,33 @@ public abstract class Tetromino implements Piece {
         this.setElements(coordonnees, couleur);
     }
 
+    @Override
+    public void deplacerDe(int deltax, int deltay) throws IllegalArgumentException {
+        // 1. Validation du déplacement
+        // - Un déplacement ne peut pas être supérieur à UN en valeur absolue (on bouge case par case).
+        // - Un déplacement vers le haut (deltay < 0) est strictement interdit.
+        // - On ne peut pas déplacer en diagonale en un seul coup (soit X change, soit Y change, mais pas les deux).
+
+        if (Math.abs(deltax) > 1) {
+            throw new IllegalArgumentException("Déplacement horizontal invalide : impossible de bouger de plus d'une case (" + deltax + ")");
+        }
+
+        if (deltay < 0 || deltay > 1) {
+            throw new IllegalArgumentException("Déplacement vertical invalide : impossible de monter ou de descendre de plus d'une case (" + deltay + ")");
+        }
+
+        if (deltax != 0 && deltay != 0) {
+            throw new IllegalArgumentException("Déplacement en diagonale interdit : deltax et deltay ne peuvent pas être modifiés en même temps.");
+        }
+
+        // 2. Si le déplacement est valide, on l'applique à TOUS les éléments composants de la pièce
+        for (Element element : this.getElements()) {
+            if (element != null) {
+                element.deplacerDe(deltax, deltay);
+            }
+        }
+    }
+
     // Cette méthode reste abstraite, car chaque forme (O, I, etc.) se construit différemment
     protected abstract void setElements(Coordonnees coordonnees, Couleur couleur);
 

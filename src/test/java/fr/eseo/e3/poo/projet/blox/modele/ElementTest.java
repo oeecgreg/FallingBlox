@@ -42,7 +42,7 @@ public class ElementTest {
     @Test
     public void testToString() {
         Element element = new Element(12, 7, Couleur.VIOLET);
-        // Le format doit être exactement "(12, 7) - VIOLET"
+        // Le format doit être exactement "(12, 7) | VIOLET".
         assertEquals("(12, 7) - VIOLET", element.toString(), "Le format de toString est incorrect");
     }
 
@@ -58,5 +58,25 @@ public class ElementTest {
 
         assertNotEquals(e1, e3, "Deux éléments de couleurs différentes ne doivent pas être égaux");
         assertNotEquals(e1, e4, "Deux éléments de coordonnées différentes ne doivent pas être égaux");
+    }
+
+    @Test
+    public void testDeplacerDe() {
+        Element element = new Element(new Coordonnees(5, 5));
+
+        // Déplacement vers la droite
+        element.deplacerDe(1, 0);
+        assertEquals(6, element.getCoordonnees().getAbscisse(), "L'abscisse devrait être 6 après un déplacement à droite");
+        assertEquals(5, element.getCoordonnees().getOrdonnee(), "L'ordonnée ne devrait pas changer");
+
+        // Déplacement vers le bas
+        element.deplacerDe(0, 1);
+        assertEquals(6, element.getCoordonnees().getAbscisse(), "L'abscisse ne devrait pas changer");
+        assertEquals(6, element.getCoordonnees().getOrdonnee(), "L'ordonnée devrait être 6 après un déplacement vers le bas");
+
+        // Déplacement vers la gauche
+        element.deplacerDe(-1, 0);
+        assertEquals(5, element.getCoordonnees().getAbscisse(), "L'abscisse devrait revenir à 5 après un déplacement à gauche");
+        assertEquals(6, element.getCoordonnees().getOrdonnee(), "L'ordonnée ne devrait pas changer");
     }
 }

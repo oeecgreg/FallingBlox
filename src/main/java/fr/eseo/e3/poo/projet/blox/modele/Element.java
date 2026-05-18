@@ -71,4 +71,19 @@ public class Element {
     public int hashCode() {
         return Objects.hash(coordonnees, couleur);
     }
+
+    /**
+     * Déplace l'élément selon un vecteur de translation (deltax, deltay).
+     * * @param deltax Le déplacement sur l'axe horizontal.
+     * @param deltay Le déplacement sur l'axe vertical.
+     */
+    public void deplacerDe(int deltax, int deltay) {
+        // On récupère les coordonnées actuelles
+        int xActuel = this.coordonnees.getAbscisse();
+        int yActuel = this.coordonnees.getOrdonnee();
+
+        // On met à jour l'objet Coordonnees avec les nouvelles valeurs
+        this.coordonnees.setAbscisse(xActuel + deltax);
+        this.coordonnees.setOrdonnee(yActuel + deltay);
+    }
 }
