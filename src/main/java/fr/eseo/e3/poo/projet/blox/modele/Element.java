@@ -2,6 +2,9 @@ package fr.eseo.e3.poo.projet.blox.modele;
 
 import java.util.Objects;
 
+/**
+ * Classe Element permettant la création de pièces.
+ */
 public class Element {
 
     private Coordonnees coordonnees;
@@ -9,55 +12,97 @@ public class Element {
 
     // --- Constructeurs ---
 
-    // 1. Constructeur complet (Coordonnees, Couleur)
+    /**
+     * Constructeur complet de la classe "Element".
+     * @param coordonnees Coordonnées de la pièce.
+     * @param couleur Couleur de la pièce.
+     */
     public Element(Coordonnees coordonnees, Couleur couleur) {
         this.coordonnees = coordonnees;
         this.couleur = couleur;
     }
 
-    // 2. Constructeur (abscisse, ordonnee, Couleur)
+    /**
+     * Constructeur de la classe "Element" permettant le choix de l'abscisse et de l'ordonnée.
+     * @param abscisse Abscisse de la pièce.
+     * @param ordonnee Ordonnées de la pièce.
+     * @param couleur Couleur de la pièce.
+     */
     public Element(int abscisse, int ordonnee, Couleur couleur) {
         this(new Coordonnees(abscisse, ordonnee), couleur);
     }
 
-    // 3. Constructeur (Coordonnees) -> Couleur par défaut
+    /**
+     * Constructeur de la classe "Element" avec le paramètre couleur par défaut.
+     * @param coordonnees Coordonnées de la pièce.
+     */
     public Element(Coordonnees coordonnees) {
         // values()[0] permet de prendre la première couleur de l'enum (ROUGE)
         this(coordonnees, Couleur.values()[0]);
     }
 
-    // 4. Constructeur (abscisse, ordonnee) -> Couleur par défaut
+    /**
+     * Constructeur de la classe "Element" avec le paramètre couleur par défaut
+     * et le choix de l'abscisse et de l'ordonnée.
+     * @param abscisse Abscisse de la pièce.
+     * @param ordonnee Ordonnée de la pièce.
+     */
     public Element(int abscisse, int ordonnee) {
         this(new Coordonnees(abscisse, ordonnee), Couleur.values()[0]);
     }
 
     // --- Accesseurs et Mutateurs ---
 
+    /**
+     * Méthode Getter de du paramètre "coordonnees".
+     * @return Renvoie le paramètre "coordonnees".
+     */
     public Coordonnees getCoordonnees() {
         return coordonnees;
     }
 
+    /**
+     * Méthode Setter du paramètre "coordonnees".
+     * @param coordonnees Coordonnées à modifier.
+     */
     public void setCoordonnees(Coordonnees coordonnees) {
         this.coordonnees = coordonnees;
     }
 
+    /**
+     * Méthode Getter du paramètre "couleur".
+     * @return Renvoie le paramètre "couleur".
+     */
     public Couleur getCouleur() {
         return couleur;
     }
 
+    /**
+     * Méthode Setter du paramètre "couleur".
+     * @param couleur Couleur à modifier.
+     */
     public void setCouleur(Couleur couleur) {
         this.couleur = couleur;
     }
 
     // --- Redéfinitions ---
 
-    // Le format exigé par le sujet est par exemple : "(12, 7) - VIOLET"
+    /**
+     * Méthode toString de la classe "Element", format comme demander dans le PDF.
+     * @return Renvoie un String avec les coordonnées et la couleur.
+     */
     @Override
     public String toString() {
         return this.coordonnees.toString() + " - " + this.couleur;
     }
 
     // equals basé sur coordonnees ET couleur
+
+    /**
+     * Méthode permettant de comparer la couleur et les coordonnées d'un "Element".
+     * @param obj Élément que l'on souhaite comparer.
+     * @return Renvoie si les deux éléments sont égaux.
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -67,6 +112,11 @@ public class Element {
     }
 
     // hashCode indispensable quand equals() est redéfini
+
+    /**
+     * Méthode indispensable lorsque la méthode equals() est redéfini.
+     * @return Renvoie le hash de l'objet sur laquelle la méthode est utilisée.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(coordonnees, couleur);

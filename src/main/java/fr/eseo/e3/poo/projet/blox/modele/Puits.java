@@ -4,6 +4,9 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import fr.eseo.e3.poo.projet.blox.modele.pieces.Piece;
 
+/**
+ * Classe servant à l'affichage de la grille de jeu.
+ */
 public class Puits {
 
     public static final int LARGEUR_PAR_DEFAUT = 10;
@@ -23,10 +26,19 @@ public class Puits {
     private final PropertyChangeSupport pcs;
 
     // --- Constructeurs ---
+
+    /**
+     * Constructeur de la classe "Puits", utilisant la largeur et la profondeur par défaut.
+     */
     public Puits() {
         this(LARGEUR_PAR_DEFAUT, PROFONDEUR_PAR_DEFAUT);
     }
 
+    /**
+     * Constructeur de la classe "Puits".
+     * @param largeur Largeur du puit.
+     * @param profondeur Profondeur du puit.
+     */
     public Puits(int largeur, int profondeur) {
         // Initialisation obligatoire de PropertyChangeSupport en passant 'this'
         this.pcs = new PropertyChangeSupport(this);
@@ -44,10 +56,19 @@ public class Puits {
     }
 
     // --- Accesseurs et Mutateurs ---
+
+    /**
+     * Méthode Getter du paramètre "largeur".
+     * @return Renvoie la largeur.
+     */
     public int getLargeur() {
         return largeur;
     }
 
+    /**
+     * Méthode Setter du paramètre "largeur".
+     * @param largeur Nouvelle largeur.
+     */
     public void setLargeur(int largeur) {
         if (largeur < 5 || largeur > 15) {
             throw new IllegalArgumentException("La largeur doit être comprise entre 5 et 15.");
@@ -55,10 +76,18 @@ public class Puits {
         this.largeur = largeur;
     }
 
+    /**
+     * Méthode Getter du paramètre "profondeur".
+     * @return Renvoie la profondeur.
+     */
     public int getProfondeur() {
         return profondeur;
     }
 
+    /**
+     * Méthode Setter du paramètre "profondeur".
+     * @param profondeur Nouvelle profondeur.
+     */
     public void setProfondeur(int profondeur) {
         if (profondeur < 15 || profondeur > 25) {
             throw new IllegalArgumentException("La profondeur doit être comprise entre 15 et 25.");
@@ -66,15 +95,28 @@ public class Puits {
         this.profondeur = profondeur;
     }
 
+    /**
+     * Méthode Getter permettant de récupérer la pièce actuelle.
+     * @return Renvoie la pièce actuelle.
+     */
     public Piece getPieceActuelle() {
         return pieceActuelle;
     }
 
+    /**
+     * Méthode Getter permettant de récupérer la pièce suivante.
+     * @return Renvoie la pièce suivante.
+     */
     public Piece getPieceSuivante() {
         return pieceSuivante;
     }
 
     // --- Logique métier avec Notifications ---
+
+    /**
+     * Méthode Setter permettant de modifier la prochaine pièce.
+     * @param piece Pièce dont les valeurs seront modifiées.
+     */
     public void setPieceSuivante(Piece piece) {
         // 1. Sauvegarde des anciennes valeurs avant modification
         Piece ancienneActuelle = this.pieceActuelle;
@@ -97,6 +139,10 @@ public class Puits {
         this.pcs.firePropertyChange(MODIFICATION_PIECE_SUIVANTE, ancienneSuivante, this.pieceSuivante);
     }
 
+    /**
+     * Méthode toString de la classe "Puits", avec le format demander par le PDF.
+     * @return Renvoie un String avec la taille du puits, la pièce actuelle et la pièce suivante.
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -106,14 +152,14 @@ public class Puits {
         if (this.pieceActuelle == null) {
             sb.append("<aucune>\n");
         } else {
-            sb.append(this.pieceActuelle.toString()).append("\n");
+            sb.append(this.pieceActuelle).append("\n");
         }
 
         sb.append("Piece Suivante : ");
         if (this.pieceSuivante == null) {
             sb.append("<aucune>");
         } else {
-            sb.append(this.pieceSuivante.toString());
+            sb.append(this.pieceSuivante);
         }
 
         return sb.toString();

@@ -6,6 +6,12 @@ import fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos.ITetromino;
 import fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos.OTetromino;
 import fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos.Tetromino;
 
+/**
+ * Classe servant à la génération de pièces avec différents modes de génération : <br>
+ * - ALEATOIRE_COMPLET | Choisis un type de tetromino aléatoirement, en utilisant une couleur aléatoire. <br>
+ * - ALEATOIRE_PIECE | Choisis un type de tetromino aléatoirement, en utilisant la même couleur pour le même type de Tetromino. <br>
+ * - CYCLIC | Choisis dans l’ordre les tetrominos (OTetromino, puis ITetromino, …, OTetromino, …) en respectant les couleurs utilisées.
+ */
 public class UsineDePiece {
 
     // Constantes pour les différents modes de l'usine
@@ -30,8 +36,9 @@ public class UsineDePiece {
     }
 
     /**
-     * Définit le mode de fonctionnement de l'usine.
+     * Méthode définissant le mode de fonctionnement de l'usine.
      * Si on passe en mode CYCLIC, on réinitialise pour que la prochaine soit un OTetromino.
+     * @param nouveauMode Choix du nouveau mode parmi ceux définis.
      */
     public static void setMode(int nouveauMode) {
         mode = nouveauMode;
@@ -41,7 +48,8 @@ public class UsineDePiece {
     }
 
     /**
-     * Génère une nouvelle pièce aux coordonnées (2, 3) selon le mode actuel.
+     * Méthode permettant la génération d'une pièce aux coordonnées (2, 3) selon le mode actuel.
+     * @return Renvoie la pièce qui est générée.
      */
     public static Tetromino genererTetromino() {
         Coordonnees coordInitiales = new Coordonnees(2, 3);

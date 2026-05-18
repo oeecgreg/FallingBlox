@@ -68,4 +68,63 @@ public class ITetrominoTest {
         assertThrows(IllegalArgumentException.class, () -> piece.deplacerDe(1, 1),
                 "Un déplacement en diagonale (1 en X et 1 en Y) doit lever une exception");
     }
+
+    @Test
+    public void testTournerSensHoraire() {
+        ITetromino piece = new ITetromino(new Coordonnees(5, 5), Couleur.ORANGE);
+
+        int pivotX = piece.getElements()[0].getCoordonnees().getAbscisse();
+        int pivotY = piece.getElements()[0].getCoordonnees().getOrdonnee();
+
+        // 1. On mémorise la distance (x, y) de chaque élément par rapport au pivot
+        int[] dxInitiaux = new int[4];
+        int[] dyInitiaux = new int[4];
+        for (int i = 1; i < 4; i++) {
+            dxInitiaux[i] = piece.getElements()[i].getCoordonnees().getAbscisse() - pivotX;
+            dyInitiaux[i] = piece.getElements()[i].getCoordonnees().getOrdonnee() - pivotY;
+        }
+
+        // 2. On fait tourner la pièce dans le sens des aiguilles d'une montre
+        piece.tourner(true);
+
+        // 3. On vérifie la nouvelle position avec la formule mathématique (x' = -y, y' = x)
+        for (int i = 1; i < 4; i++) {
+            int expectedX = pivotX - dyInitiaux[i];
+            int expectedY = pivotY + dxInitiaux[i];
+
+            assertEquals(expectedX, piece.getElements()[i].getCoordonnees().getAbscisse(),
+                    "Rotation horaire : l'abscisse de l'élément " + i + " est incorrecte");
+            assertEquals(expectedY, piece.getElements()[i].getCoordonnees().getOrdonnee(),
+                    "Rotation horaire : l'ordonnée de l'élément " + i + " est incorrecte");
+        }
+    }
+
+    @Test
+    public void testTournerSensAntiHoraire() {
+        ITetromino piece = new ITetromino(new Coordonnees(5, 5), Couleur.ORANGE);
+
+        int pivotX = piece.getElements()[0].getCoordonnees().getAbscisse();
+        int pivotY = piece.getElements()[0].getCoordonnees().getOrdonnee();
+
+        int[] dxInitiaux = new int[4];
+        int[] dyInitiaux = new int[4];
+        for (int i = 1; i < 4; i++) {
+            dxInitiaux[i] = piece.getElements()[i].getCoordonnees().getAbscisse() - pivotX;
+            dyInitiaux[i] = piece.getElements()[i].getCoordonnees().getOrdonnee() - pivotY;
+        }
+
+        // On fait tourner la pièce dans le sens inverse des aiguilles d'une montre
+        piece.tourner(false);
+
+        // On vérifie la nouvelle position avec la formule mathématique (x' = y, y' = -x)
+        for (int i = 1; i < 4; i++) {
+            int expectedX = pivotX + dyInitiaux[i];
+            int expectedY = pivotY - dxInitiaux[i];
+
+            assertEquals(expectedX, piece.getElements()[i].getCoordonnees().getAbscisse(),
+                    "Rotation anti-horaire : l'abscisse de l'élément " + i + " est incorrecte");
+            assertEquals(expectedY, piece.getElements()[i].getCoordonnees().getOrdonnee(),
+                    "Rotation anti-horaire : l'ordonnée de l'élément " + i + " est incorrecte");
+        }
+    }
 }

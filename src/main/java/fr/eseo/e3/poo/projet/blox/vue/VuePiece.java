@@ -6,6 +6,9 @@ import java.awt.Graphics2D;
 import fr.eseo.e3.poo.projet.blox.modele.Element;
 import fr.eseo.e3.poo.projet.blox.modele.pieces.Piece;
 
+/**
+ * Classe servant à l'affichage des pièces.
+ */
 public class VuePiece {
 
     // 1. Constante de classe pour le facteur de clarté (valeur entre "0.0" et "1.0").
@@ -17,7 +20,9 @@ public class VuePiece {
     private final int taille;
 
     /**
-     * Constructeur charge d'initialiser les variables immuables.
+     * Constructeur de la classe "VuePiece".
+     * @param piece Pièce à afficher.
+     * @param taille Taille de la pièce à afficher.
      */
     public VuePiece(Piece piece, int taille) {
         this.piece = piece;
@@ -27,6 +32,8 @@ public class VuePiece {
     /**
      * Méthode de classe (statique) appliquant l'algorithme personnalisé
      * pour obtenir une teinte plus claire d'une couleur donnée.
+     * @param couleur Couleur dont une teinte plus claire sera tirée.
+     * @return Renvoie les valeurs RGB de la nouvelle teinte de couleur.
      */
     public static Color teinte(Color couleur) {
         int r = couleur.getRed();
@@ -43,7 +50,8 @@ public class VuePiece {
     }
 
     /**
-     * Dessine les différents éléments de la pièce sur le contexte graphique.
+     * Méthode permettant de dessiner les différents éléments de la pièce sur le contexte graphique.
+     * @param g2D Graphiques 2D de la pièce.
      */
     public void afficherPiece(Graphics2D g2D) {
         Element[] elements = this.piece.getElements();
@@ -72,10 +80,18 @@ public class VuePiece {
 
     // --- Accesseurs (au cas où l'Assignment Centre les réclame pour l'encapsulation) ---
 
+    /**
+     * Méthode Getter de la classe "VuePiece", applicable sur "Piece".
+     * @return Renvoie la pièce étant affichée.
+     */
     public Piece getPiece() {
         return this.piece;
     }
 
+    /**
+     * Méthode Getter de la classe "VuePiece".
+     * @return Renvoie la taille du puits.
+     */
     public int getTaille() {
         return this.taille;
     }

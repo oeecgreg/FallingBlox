@@ -82,4 +82,28 @@ public class OTetrominoTest {
         OTetromino piece = new OTetromino(new Coordonnees(5, 5), Couleur.ROUGE);
         assertThrows(IllegalArgumentException.class, () -> piece.deplacerDe(-1, 1));
     }
+
+    @Test
+    public void testTourner() {
+        OTetromino piece = new OTetromino(new Coordonnees(5, 5), Couleur.ROUGE);
+
+        // 1. Mémorisation des positions exactes initiales
+        int[] xInitiaux = new int[4];
+        int[] yInitiaux = new int[4];
+        for (int i = 0; i < 4; i++) {
+            xInitiaux[i] = piece.getElements()[i].getCoordonnees().getAbscisse();
+            yInitiaux[i] = piece.getElements()[i].getCoordonnees().getOrdonnee();
+        }
+
+        // 2. On tente de faire tourner le carré
+        piece.tourner(true);
+
+        // 3. On s'assure qu'absolument aucun élément n'a bougé d'un pixel
+        for (int i = 0; i < 4; i++) {
+            assertEquals(xInitiaux[i], piece.getElements()[i].getCoordonnees().getAbscisse(),
+                    "L'abscisse du carré ne doit pas changer lors d'une rotation");
+            assertEquals(yInitiaux[i], piece.getElements()[i].getCoordonnees().getOrdonnee(),
+                    "L'ordonnée du carré ne doit pas changer lors d'une rotation");
+        }
+    }
 }

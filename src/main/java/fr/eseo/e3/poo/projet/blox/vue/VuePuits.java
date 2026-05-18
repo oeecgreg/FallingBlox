@@ -13,6 +13,10 @@ import fr.eseo.e3.poo.projet.blox.modele.Puits;
 import fr.eseo.e3.poo.projet.blox.modele.pieces.Piece;
 
 // La classe implémente désormais formellement le contrat PropertyChangeListener
+
+/**
+ * Classe servant à l'affichage du puits à l'aide de JPanel, inclue également des Listeners.
+ */
 public class VuePuits extends JPanel implements PropertyChangeListener {
 
     public static final int TAILLE_PAR_DEFAUT = 20;
@@ -23,10 +27,19 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
 
     // --- Constructeurs ---
 
+    /**
+     * Constructeur de la classe "VuePuits", avec l'usage de la taille par défaut défini.
+     * @param puits Puits à afficher.
+     */
     public VuePuits(Puits puits) {
         this(puits, TAILLE_PAR_DEFAUT);
     }
 
+    /**
+     * Constructeur de la classe "VuePuits".
+     * @param puits Puits à afficher.
+     * @param taille Taille du puits.
+     */
     public VuePuits(Puits puits, int taille) {
         this.puits = puits;
         this.taille = taille;
@@ -43,10 +56,18 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
 
     // --- Accesseurs et Mutateurs ---
 
+    /**
+     * Méthode Getter de la classe "VuePuits", appliquable à un "Puits".
+     * @return Renvoie les valeurs du Puits.
+     */
     public Puits getPuits() {
         return this.puits;
     }
 
+    /**
+     * Méthode Setter de la classe "VuePuits", appliquable à un "Puits".
+     * @param puits Puits que l'on souhaite modifier.
+     */
     public void setPuits(Puits puits) {
         // Désinscription auprès de l'ancien Puits si nécessaire
         if (this.puits != null) {
@@ -63,25 +84,45 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
         this.mettreAJourTaille();
     }
 
+    /**
+     * Méthode Getter pour le paramètre "taille".
+     * @return Renvoie la taille.
+     */
     public int getTaille() {
         return this.taille;
     }
 
+    /**
+     * Méthode Setter pour le paramètre "taille".
+     * @param taille Nouvelle taille qui sera choisie.
+     */
     public void setTaille(int taille) {
         this.taille = taille;
         this.mettreAJourTaille();
     }
 
+    /**
+     * Méthoder Getter pour un "VuePiece".
+     * @return Renvoie les paramètres de la "VuePiece".
+     */
     public VuePiece getVuePiece() {
         return this.vuePiece;
     }
 
     // Exigence : Visibilité modifiée en 'private' pour sécuriser l'encapsulation
+
+    /**
+     * Méthode Setter pour un "VuePiece".
+     * @param vuePiece "VuePiece" qui verra ses paramètres modifiés.
+     */
     private void setVuePiece(VuePiece vuePiece) {
         this.vuePiece = vuePiece;
         this.repaint(); // Force le rafraîchissement graphique immédiat de l'écran
     }
 
+    /**
+     * Méthode permettant de mettre à jour la taille du puits.
+     */
     private void mettreAJourTaille() {
         if (this.puits != null) {
             int largeurPixels = this.puits.getLargeur() * this.taille;

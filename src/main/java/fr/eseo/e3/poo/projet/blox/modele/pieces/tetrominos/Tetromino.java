@@ -6,17 +6,34 @@ import fr.eseo.e3.poo.projet.blox.modele.Element;
 import fr.eseo.e3.poo.projet.blox.modele.pieces.Piece;
 import  fr.eseo.e3.poo.projet.blox.modele.Puits;
 
+/**
+ * Classe Tetromino implémentant l'interface "Pièce", elle sert à créer les différentes variantes de pièces.
+ */
 public abstract class Tetromino implements Piece {
 
     private final Element[] elements;
     private Puits puits;
 
-    // Le constructeur est maintenant commun à tous les Tetrominos
+    /**
+     * Constructeur de la classe "Tetromino", désormais commun à toutes les classes.
+     * @param coordonnees Coordonnées du Tetromino.
+     * @param couleur Couleur du Tetromino.
+     */
     public Tetromino(Coordonnees coordonnees, Couleur couleur) {
         this.elements = new Element[4];
         this.setElements(coordonnees, couleur);
     }
 
+    /**
+     * Méthode permettant de déplacer un objet de la classe "Tetromino" en remplaçant ses nouvelles coordonnées.
+     * @param deltax Déplacement horizontal (-1, 0 ou 1).
+     * @param deltay Déplacement vertical (0 ou 1).
+     * @throws IllegalArgumentException Renvoie une exception si le déplacement de la pièce
+     * n'est pas possible pour les raisons suivantes : <br/>
+     * – Déplacement supérieur à la valeur absolue UN. <br/>
+     * – Déplacement vers le haut. <br/>
+     * – Déplacement en diagonale, soit le X soit le Y change.
+     */
     @Override
     public void deplacerDe(int deltax, int deltay) throws IllegalArgumentException {
         // 1. Validation du déplacement
@@ -40,6 +57,51 @@ public abstract class Tetromino implements Piece {
         for (Element element : this.getElements()) {
             if (element != null) {
                 element.deplacerDe(deltax, deltay);
+            }
+        }
+    }
+
+    /**
+     * Méthode permettant de tourner une pièce Tetromino de 90°.
+     * @param sensHoraire true pour une rotation dans le sens des aiguilles d'une montre,
+     * false pour le sens anti-horaire.
+     */
+    @Override
+    public void tourner(boolean sensHoraire) {
+        // L'élément de référence est toujours le premier du tableau (index 0)
+        Element pivot = this.getElements()[0];
+        if (pivot == null) return;
+
+        int pivotX = pivot.getCoordonnees().getAbscisse();
+        int pivotY = pivot.getCoordonnees().getOrdonnee();
+
+        // On boucle sur tous les autres éléments (à partir de l'index 1)
+        for (int i = 1; i < this.getElements().length; i++) {
+            Element element = this.getElements()[i];
+
+            if (element != null) {
+                int xActuel = element.getCoordonnees().getAbscisse();
+                int yActuel = element.getCoordonnees().getOrdonnee();
+
+                // Étape 1 : Translater l'élément pour que le pivot soit à l'origine (0,0)
+                int xRelatif = xActuel - pivotX;
+                int yRelatif = yActuel - pivotY;
+
+                int nouveauXRelatif;
+                int nouveauYRelatif;
+
+                // Étape 2 : Appliquer la rotation (attention à l'axe Y inversé !)
+                if (sensHoraire) {
+                    nouveauXRelatif = -yRelatif;
+                    nouveauYRelatif = xRelatif;
+                } else {
+                    nouveauXRelatif = yRelatif;
+                    nouveauYRelatif = -xRelatif;
+                }
+
+                // Étape 3 : Translater à nouveau pour remettre l'élément autour du pivot
+                element.getCoordonnees().setAbscisse(pivotX + nouveauXRelatif);
+                element.getCoordonnees().setOrdonnee(pivotY + nouveauYRelatif);
             }
         }
     }
