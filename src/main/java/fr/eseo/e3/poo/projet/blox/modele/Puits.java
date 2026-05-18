@@ -82,7 +82,7 @@ public class Puits {
         if (this.pieceActuelle == null) {
             sb.append("<aucune>\n");
         } else {
-            sb.append(this.pieceActuelle.toString()).append("\n");
+            sb.append(this.pieceActuelle).append("\n");
         }
 
         sb.append("Piece Suivante : ");
@@ -90,7 +90,7 @@ public class Puits {
             sb.append("<aucune>");
         } else {
             // Pas de \n à la fin de la dernière ligne
-            sb.append(this.pieceSuivante.toString());
+            sb.append(this.pieceSuivante);
         }
 
         return sb.toString();
