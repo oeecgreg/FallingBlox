@@ -9,13 +9,10 @@ public class VuePuitsAffichageTest {
 
     // Méthode principale (point d'entrée) pour lancer nos tests d'affichage
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                VuePuitsAffichageTest test = new VuePuitsAffichageTest();
-                test.testConstructeurPuits();
-                test.testConstructeurPuitsTaille();
-            }
+        SwingUtilities.invokeLater(() -> {
+            VuePuitsAffichageTest test = new VuePuitsAffichageTest();
+            test.testConstructeurPuits();
+            test.testConstructeurPuitsTaille();
         });
     }
 

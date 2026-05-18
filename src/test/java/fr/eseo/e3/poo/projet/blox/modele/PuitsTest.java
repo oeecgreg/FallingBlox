@@ -29,14 +29,10 @@ public class PuitsTest {
     @Test
     public void testExceptionsDimensions() {
         // Test de la largeur (doit être entre 5 et 15)
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Puits(4, 15);
-        }, "Une largeur de 4 doit déclencher une exception");
+        assertThrows(IllegalArgumentException.class, () -> new Puits(4, 15), "Une largeur de 4 doit déclencher une exception");
 
         // Test de la profondeur (doit être entre 15 et 25)
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Puits(10, 30);
-        }, "Une profondeur de 30 doit déclencher une exception");
+        assertThrows(IllegalArgumentException.class, () -> new Puits(10, 30), "Une profondeur de 30 doit déclencher une exception");
     }
 
     @Test

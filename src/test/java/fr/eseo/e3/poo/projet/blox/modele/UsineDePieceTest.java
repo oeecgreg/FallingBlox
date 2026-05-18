@@ -1,14 +1,12 @@
 package fr.eseo.e3.poo.projet.blox.modele;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 
 import fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos.ITetromino;
 import fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos.OTetromino;
 import fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos.Tetromino;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UsineDePieceTest {
 
@@ -29,17 +27,17 @@ public class UsineDePieceTest {
 
         // 1. La première pièce doit être un OTetromino (rouge).
         Tetromino piece1 = UsineDePiece.genererTetromino();
-        assertTrue(piece1 instanceof OTetromino, "La 1ère pièce cyclique doit être un OTetromino");
+        assertInstanceOf(OTetromino.class, piece1, "La 1ère pièce cyclique doit être un OTetromino");
         assertEquals(Couleur.ROUGE, piece1.getElements()[0].getCouleur(), "La couleur du OTetromino doit être rouge");
 
         // 2. La deuxième pièce doit être un ITetromino (orange).
         Tetromino piece2 = UsineDePiece.genererTetromino();
-        assertTrue(piece2 instanceof ITetromino, "La 2ème pièce cyclique doit être un ITetromino");
+        assertInstanceOf(ITetromino.class, piece2, "La 2ème pièce cyclique doit être un ITetromino");
         assertEquals(Couleur.ORANGE, piece2.getElements()[0].getCouleur(), "La couleur du ITetromino doit être orange");
 
         // 3. La troisième pièce doit de nouveau être un OTetromino (ça boucle).
         Tetromino piece3 = UsineDePiece.genererTetromino();
-        assertTrue(piece3 instanceof OTetromino, "La 3ème pièce cyclique doit recommencer sur un OTetromino");
+        assertInstanceOf(OTetromino.class, piece3, "La 3ème pièce cyclique doit recommencer sur un OTetromino");
     }
 
     @Test
