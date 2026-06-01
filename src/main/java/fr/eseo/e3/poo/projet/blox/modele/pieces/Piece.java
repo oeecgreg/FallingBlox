@@ -1,5 +1,6 @@
 package fr.eseo.e3.poo.projet.blox.modele.pieces;
 
+import fr.eseo.e3.poo.projet.blox.modele.BloxException;
 import fr.eseo.e3.poo.projet.blox.modele.Couleur;
 import fr.eseo.e3.poo.projet.blox.modele.Element;
 import fr.eseo.e3.poo.projet.blox.modele.Puits;
@@ -46,12 +47,12 @@ public interface Piece {
      * @param deltay Déplacement vertical (0 ou 1)
      * @throws IllegalArgumentException si le déplacement est invalide (ex : vers le haut, ou trop grand).
      */
-    void deplacerDe(int deltax, int deltay) throws IllegalArgumentException;
+    void deplacerDe(int deltax, int deltay)throws IllegalArgumentException, BloxException;
 
     /**
      * Fait tourner la pièce de 90 degrés autour de son élément de référence.
      * @param sensHoraire true pour une rotation dans le sens des aiguilles d'une montre,
      * false pour le sens anti-horaire.
      */
-    void tourner(boolean sensHoraire);
+    void tourner(boolean sensHoraire) throws BloxException;
 }

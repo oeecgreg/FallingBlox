@@ -1,5 +1,6 @@
 package fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos;
 
+import fr.eseo.e3.poo.projet.blox.modele.BloxException;
 import fr.eseo.e3.poo.projet.blox.modele.Coordonnees;
 import fr.eseo.e3.poo.projet.blox.modele.Couleur;
 import fr.eseo.e3.poo.projet.blox.modele.Element;
@@ -40,7 +41,7 @@ public class OTetromino extends Tetromino {
      * false pour le sens anti-horaire.
      */
     @Override
-    public void tourner(boolean sensHoraire) {
+    public void tourner(boolean sensHoraire) throws BloxException {
         // Surcharge volontaire : Un OTetromino (carré) ne tourne pas.
         // On ne fait donc absolument rien ici !
     }

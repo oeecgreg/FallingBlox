@@ -9,6 +9,8 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.JPanel;
 
+import fr.eseo.e3.poo.projet.blox.controleur.PieceDeplacement;
+import fr.eseo.e3.poo.projet.blox.controleur.PieceRotation;
 import fr.eseo.e3.poo.projet.blox.modele.Puits;
 import fr.eseo.e3.poo.projet.blox.modele.pieces.Piece;
 
@@ -24,6 +26,8 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
     private Puits puits;
     private int taille;
     private VuePiece vuePiece;
+    private PieceDeplacement pieceDeplacement;
+    private PieceRotation pieceRotation;
 
     // --- Constructeurs ---
 
@@ -48,10 +52,19 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
         this.setBackground(Color.WHITE);
         this.mettreAJourTaille();
 
-        // Inscription de la vue auprès du puits initial s'il existe
         if (this.puits != null) {
             this.puits.addPropertyChangeListener(this);
         }
+
+        // Configuration de l'unique contrôleur de déplacement
+        this.pieceDeplacement = new PieceDeplacement(this);
+        this.addMouseMotionListener(this.pieceDeplacement);
+        this.addMouseListener(this.pieceDeplacement);
+        this.addMouseWheelListener(this.pieceDeplacement);
+
+        // Configuration de l'unique contrôleur de rotation
+        this.pieceRotation = new PieceRotation(this);
+        this.addMouseListener(this.pieceRotation); // Enregistré en tant que MouseListener
     }
 
     // --- Accesseurs et Mutateurs ---
@@ -69,16 +82,24 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
      * @param puits Puits que l'on souhaite modifier.
      */
     public void setPuits(Puits puits) {
-        // Désinscription auprès de l'ancien Puits si nécessaire
         if (this.puits != null) {
             this.puits.removePropertyChangeListener(this);
         }
 
         this.puits = puits;
 
-        // Inscription auprès du nouveau Puits
         if (this.puits != null) {
             this.puits.addPropertyChangeListener(this);
+        }
+
+        // On met à jour le puits pour le déplacement
+        if (this.pieceDeplacement != null) {
+            this.pieceDeplacement.setPuits(this.puits);
+        }
+
+        // On met à jour le puits pour la rotation
+        if (this.pieceRotation != null) {
+            this.pieceRotation.setPuits(this.puits);
         }
 
         this.mettreAJourTaille();

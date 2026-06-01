@@ -1,12 +1,10 @@
 package fr.eseo.e3.poo.projet.blox.modele;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
 
 import fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos.OTetromino;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PuitsTest {
 
@@ -55,6 +53,43 @@ public class PuitsTest {
         // Vérification de la position (largeur / 2, -4) soit (5, -4) pour un puits de largeur 10
         assertEquals(new Coordonnees(5, -4), puits.getPieceActuelle().getElements()[0].getCoordonnees(),
                 "La pièce actuelle doit être placée aux coordonnées (largeur/2, -4)");
+    }
+
+    @Test
+    public void testTasInitialementVide() {
+        // Les constructeurs standards doivent initialiser un Tas vide
+        Puits puitsDefaut = new Puits();
+        assertNotNull(puitsDefaut.getTas(), "Le tas ne doit pas être null après construction");
+        assertTrue(puitsDefaut.getTas().getElements().isEmpty(), "Le tas initial doit être vide");
+
+        Puits puitsDimensions = new Puits(10, 20);
+        assertNotNull(puitsDimensions.getTas());
+        assertTrue(puitsDimensions.getTas().getElements().isEmpty());
+    }
+
+    @Test
+    public void testConstructeurQuatreArgumentsValide() {
+        // Création d'un puits 10x15 avec un tas initial de 5 éléments sur 2 lignes
+        Puits puitsPreRempli = new Puits(10, 15, 5, 2);
+
+        assertNotNull(puitsPreRempli.getTas(), "Le tas ne doit pas être null");
+        assertEquals(5, puitsPreRempli.getTas().getElements().size(), "Le tas doit contenir 5 éléments");
+    }
+
+    @Test
+    public void testConstructeurQuatreArgumentsInvalide() {
+        // Tentative de surcharge de la capacité du tas à la construction du puits
+        assertThrows(IllegalArgumentException.class, () -> new Puits(10, 15, 40, 2),
+                "Le constructeur doit propager l'IllegalArgumentException du Tas en cas de surcharge");
+    }
+
+    @Test
+    public void testGetSetTas() {
+        Puits puits = new Puits();
+        Tas nouveauTas = new Tas(puits);
+        puits.setTas(nouveauTas);
+
+        assertEquals(nouveauTas, puits.getTas(), "Le mutateur ou l'accesseur du tas ne fonctionne pas correctement");
     }
 
     @Test

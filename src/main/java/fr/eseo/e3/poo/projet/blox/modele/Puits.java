@@ -25,6 +25,8 @@ public class Puits {
     // Gestionnaire de notification de changement de propriété
     private final PropertyChangeSupport pcs;
 
+    private Tas tas;
+
     // --- Constructeurs ---
 
     /**
@@ -44,6 +46,17 @@ public class Puits {
         this.pcs = new PropertyChangeSupport(this);
         this.setLargeur(largeur);
         this.setProfondeur(profondeur);
+        this.tas = new Tas(this);
+    }
+
+    /**
+     * NOUVEAU : Troisième constructeur permettant d'initialiser un Puits
+     * avec un Tas déjà pré-rempli d'éléments aléatoires au fond.
+     */
+    public Puits(int largeur, int profondeur, int nbElements, int nbLignes) {
+        this(largeur, profondeur);
+        // Initialisation du tas avec génération aléatoire des briques de fond
+        this.tas = new Tas(this, nbElements, nbLignes);
     }
 
     // --- Gestion des Écouteurs (Delegation vers pcs) ---
@@ -56,6 +69,14 @@ public class Puits {
     }
 
     // --- Accesseurs et Mutateurs ---
+
+    public Tas getTas() {
+        return this.tas;
+    }
+
+    public void setTas(Tas tas) {
+        this.tas = tas;
+    }
 
     /**
      * Méthode Getter du paramètre "largeur".

@@ -4,7 +4,8 @@ import fr.eseo.e3.poo.projet.blox.modele.Coordonnees;
 import fr.eseo.e3.poo.projet.blox.modele.Couleur;
 import fr.eseo.e3.poo.projet.blox.modele.Element;
 import fr.eseo.e3.poo.projet.blox.modele.pieces.Piece;
-import  fr.eseo.e3.poo.projet.blox.modele.Puits;
+import fr.eseo.e3.poo.projet.blox.modele.Puits;
+import fr.eseo.e3.poo.projet.blox.modele.BloxException;
 
 /**
  * Classe Tetromino implémentant l'interface "Pièce", elle sert à créer les différentes variantes de pièces.
@@ -35,25 +36,48 @@ public abstract class Tetromino implements Piece {
      * – Déplacement en diagonale, soit le X soit le Y change.
      */
     @Override
-    public void deplacerDe(int deltax, int deltay) throws IllegalArgumentException {
-        // 1. Validation du déplacement
-        // - Un déplacement ne peut pas être supérieur à UN en valeur absolue (on bouge case par case).
-        // - Un déplacement vers le haut (deltay < 0) est strictement interdit.
-        // - On ne peut pas déplacer en diagonale en un seul coup (soit X change, soit Y change, mais pas les deux).
-
+    public void deplacerDe(int deltax, int deltay) throws IllegalArgumentException, BloxException {
+        // 1. Validation des arguments (Inchangé)
         if (Math.abs(deltax) > 1) {
-            throw new IllegalArgumentException("Déplacement horizontal invalide : impossible de bouger de plus d'une case (" + deltax + ")");
+            throw new IllegalArgumentException("Déplacement horizontal supérieur à 1 case.");
         }
-
         if (deltay < 0 || deltay > 1) {
-            throw new IllegalArgumentException("Déplacement vertical invalide : impossible de monter ou de descendre de plus d'une case (" + deltay + ")");
+            throw new IllegalArgumentException("Déplacement vertical vers le haut ou supérieur à 1 case.");
         }
-
         if (deltax != 0 && deltay != 0) {
-            throw new IllegalArgumentException("Déplacement en diagonale interdit : deltax et deltay ne peuvent pas être modifiés en même temps.");
+            throw new IllegalArgumentException("Déplacement en diagonale interdit.");
         }
 
-        // 2. Si le déplacement est valide, on l'applique à TOUS les éléments composants de la pièce
+        // 2. Vérification préventive (Look-ahead) si le puits est défini
+        if (this.puits != null) {
+            for (Element element : this.getElements()) {
+                if (element != null) {
+                    int futurX = element.getCoordonnees().getAbscisse() + deltax;
+                    int futurY = element.getCoordonnees().getOrdonnee() + deltay;
+
+                    // A. Sortie du Puits (Gauche / Droite)
+                    if (futurX < 0 || futurX >= this.puits.getLargeur()) {
+                        throw new BloxException("Mouvement impossible : Sortie des limites horizontales du puits.", BloxException.BLOX_SORTIE_PUITS);
+                    }
+
+                    // B. Collision avec le Fond
+                    if (futurY >= this.puits.getProfondeur()) {
+                        throw new BloxException("Mouvement impossible : Collision avec le fond du puits.", BloxException.BLOX_COLLISION);
+                    }
+
+                    // C. Collision avec le Tas d'éléments
+                    if (this.puits.getTas() != null) {
+                        for (Element eTas : this.puits.getTas().getElements()) {
+                            if (eTas.getCoordonnees().getAbscisse() == futurX && eTas.getCoordonnees().getOrdonnee() == futurY) {
+                                throw new BloxException("Mouvement impossible : Collision avec un bloc du tas.", BloxException.BLOX_COLLISION);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. Si aucune exception n'a été levée, on applique réellement le déplacement à tous les éléments
         for (Element element : this.getElements()) {
             if (element != null) {
                 element.deplacerDe(deltax, deltay);
@@ -67,41 +91,61 @@ public abstract class Tetromino implements Piece {
      * false pour le sens anti-horaire.
      */
     @Override
-    public void tourner(boolean sensHoraire) {
-        // L'élément de référence est toujours le premier du tableau (index 0)
+    public void tourner(boolean sensHoraire) throws BloxException {
         Element pivot = this.getElements()[0];
         if (pivot == null) return;
 
         int pivotX = pivot.getCoordonnees().getAbscisse();
         int pivotY = pivot.getCoordonnees().getOrdonnee();
 
-        // On boucle sur tous les autres éléments (à partir de l'index 1)
+        int[][] futuresCoords = new int[this.getElements().length][2];
+        futuresCoords[0][0] = pivotX;
+        futuresCoords[0][1] = pivotY;
+
+        // 1. Simulation préventive de la rotation
         for (int i = 1; i < this.getElements().length; i++) {
             Element element = this.getElements()[i];
-
             if (element != null) {
                 int xActuel = element.getCoordonnees().getAbscisse();
                 int yActuel = element.getCoordonnees().getOrdonnee();
 
-                // Étape 1 : Translater l'élément pour que le pivot soit à l'origine (0,0)
                 int xRelatif = xActuel - pivotX;
                 int yRelatif = yActuel - pivotY;
 
-                int nouveauXRelatif;
-                int nouveauYRelatif;
+                int nouveauXRelatif = sensHoraire ? -yRelatif : yRelatif;
+                int nouveauYRelatif = sensHoraire ? xRelatif : -xRelatif;
 
-                // Étape 2 : Appliquer la rotation (attention à l'axe Y inversé !)
-                if (sensHoraire) {
-                    nouveauXRelatif = -yRelatif;
-                    nouveauYRelatif = xRelatif;
-                } else {
-                    nouveauXRelatif = yRelatif;
-                    nouveauYRelatif = -xRelatif;
+                int futurX = pivotX + nouveauXRelatif;
+                int futurY = pivotY + nouveauYRelatif;
+
+                // 2. Validation des collisions UNIQUEMENT si le puits existe
+                if (this.puits != null) {
+                    if (futurX < 0 || futurX >= this.puits.getLargeur()) {
+                        throw new BloxException("Rotation impossible : Sortie du puits.", BloxException.BLOX_SORTIE_PUITS);
+                    }
+                    if (futurY >= this.puits.getProfondeur()) {
+                        throw new BloxException("Rotation impossible : Collision avec le fond.", BloxException.BLOX_COLLISION);
+                    }
+                    if (this.puits.getTas() != null) {
+                        for (Element eTas : this.puits.getTas().getElements()) {
+                            if (eTas.getCoordonnees().getAbscisse() == futurX && eTas.getCoordonnees().getOrdonnee() == futurY) {
+                                throw new BloxException("Rotation impossible : Collision avec le tas.", BloxException.BLOX_COLLISION);
+                            }
+                        }
+                    }
                 }
 
-                // Étape 3 : Translater à nouveau pour remettre l'élément autour du pivot
-                element.getCoordonnees().setAbscisse(pivotX + nouveauXRelatif);
-                element.getCoordonnees().setOrdonnee(pivotY + nouveauYRelatif);
+                futuresCoords[i][0] = futurX;
+                futuresCoords[i][1] = futurY;
+            }
+        }
+
+        // 3. Application définitive de la rotation (s'exécute toujours, même sans puits)
+        for (int i = 1; i < this.getElements().length; i++) {
+            Element element = this.getElements()[i];
+            if (element != null) {
+                element.getCoordonnees().setAbscisse(futuresCoords[i][0]);
+                element.getCoordonnees().setOrdonnee(futuresCoords[i][1]);
             }
         }
     }

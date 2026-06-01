@@ -1,11 +1,12 @@
 package fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import fr.eseo.e3.poo.projet.blox.modele.BloxException;
+import fr.eseo.e3.poo.projet.blox.modele.Puits;
 import org.junit.jupiter.api.Test;
 import fr.eseo.e3.poo.projet.blox.modele.Coordonnees;
 import fr.eseo.e3.poo.projet.blox.modele.Couleur;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class OTetrominoTest {
 
@@ -63,10 +64,13 @@ public class OTetrominoTest {
     public void testDeplacerDeValide() {
         OTetromino piece = new OTetromino(new Coordonnees(5, 5), Couleur.ROUGE);
 
-        // Déplacement vers la gauche
-        piece.deplacerDe(-1, 0);
+        // ENCAPSULATION DANS UN TRY...CATCH
+        try {
+            piece.deplacerDe(-1, 0);
+        } catch (BloxException e) {
+            fail("Le déplacement valide a levé une BloxException de manière inattendue : " + e.getMessage());
+        }
 
-        // Le pivot (en haut à gauche du carré O) doit passer de X=5 à X=4.
         assertEquals(4, piece.getElements()[0].getCoordonnees().getAbscisse());
         assertEquals(5, piece.getElements()[0].getCoordonnees().getOrdonnee());
     }
@@ -87,7 +91,6 @@ public class OTetrominoTest {
     public void testTourner() {
         OTetromino piece = new OTetromino(new Coordonnees(5, 5), Couleur.ROUGE);
 
-        // 1. Mémorisation des positions exactes initiales
         int[] xInitiaux = new int[4];
         int[] yInitiaux = new int[4];
         for (int i = 0; i < 4; i++) {
@@ -95,15 +98,58 @@ public class OTetrominoTest {
             yInitiaux[i] = piece.getElements()[i].getCoordonnees().getOrdonnee();
         }
 
-        // 2. On tente de faire tourner le carré
-        piece.tourner(true);
-
-        // 3. On s'assure qu'absolument aucun élément n'a bougé d'un pixel
-        for (int i = 0; i < 4; i++) {
-            assertEquals(xInitiaux[i], piece.getElements()[i].getCoordonnees().getAbscisse(),
-                    "L'abscisse du carré ne doit pas changer lors d'une rotation");
-            assertEquals(yInitiaux[i], piece.getElements()[i].getCoordonnees().getOrdonnee(),
-                    "L'ordonnée du carré ne doit pas changer lors d'une rotation");
+        // ENCAPSULATION DANS UN TRY...CATCH
+        try {
+            piece.tourner(true);
+        } catch (BloxException e) {
+            fail("La rotation (qui ne fait rien) ne devrait pas lever d'exception : " + e.getMessage());
         }
+
+        for (int i = 0; i < 4; i++) {
+            assertEquals(xInitiaux[i], piece.getElements()[i].getCoordonnees().getAbscisse());
+            assertEquals(yInitiaux[i], piece.getElements()[i].getCoordonnees().getOrdonnee());
+        }
+    }
+
+    @Test
+    public void testDeplacerDeSortiePuitsGauche() {
+        Puits puits = new Puits(10, 15);
+        // Le carré occupe deux colonnes (ici 0 et 1). Son pivot est à 0.
+        OTetromino piece = new OTetromino(new Coordonnees(0, 5), Couleur.ROUGE);
+        piece.setPuits(puits);
+
+        BloxException exception = assertThrows(BloxException.class, () -> {
+            piece.deplacerDe(-1, 0);
+        });
+        assertEquals(BloxException.BLOX_SORTIE_PUITS, exception.getCode());
+    }
+
+    @Test
+    public void testDeplacerDeSortiePuitsDroite() {
+        Puits puits = new Puits(10, 15);
+        // Le carré fait 2 de large. Si le pivot est à 9, le deuxième bloc est à X=10 (dehors).
+        // Plaçons le pivot à 9 pour provoquer immédiatement l'erreur de bord.
+        OTetromino piece = new OTetromino(new Coordonnees(9, 5), Couleur.ROUGE);
+        piece.setPuits(puits);
+
+        // Le constructeur ou le look-ahead du déplacement doit refuser
+        BloxException exception = assertThrows(BloxException.class, () -> {
+            piece.deplacerDe(0, 0); // La simple validation de sa position actuelle par rapport au puits échoue
+        });
+        assertEquals(BloxException.BLOX_SORTIE_PUITS, exception.getCode());
+    }
+
+    @Test
+    public void testDeplacerDeCollisionFond() {
+        Puits puits = new Puits(10, 15);
+        // MODIFICATION ICI : On passe Y à 14 pour forcer la collision avec le fond (15)
+        OTetromino piece = new OTetromino(new Coordonnees(5, 14), Couleur.ROUGE);
+        piece.setPuits(puits);
+
+        BloxException exception = assertThrows(BloxException.class, () -> {
+            piece.deplacerDe(0, 1);
+        }, "Le déplacement sous le fond du puits doit lever une BloxException");
+
+        assertEquals(BloxException.BLOX_COLLISION, exception.getCode());
     }
 }
