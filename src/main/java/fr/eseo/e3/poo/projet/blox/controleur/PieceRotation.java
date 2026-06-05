@@ -27,7 +27,7 @@ public class PieceRotation extends MouseAdapter {
     // --- Gestion du clic de souris ---
     @Override
     public void mouseClicked(MouseEvent event) {
-        if (this.puits != null && this.puits.getPieceActuelle() != null) {
+        if (this.puits != null && this.puits.getPieceActuelle() != null && !this.puits.isPartieTerminee()) {
             boolean rotationEffectuee = false;
 
             // AJOUT DU BLOC TRY...CATCH

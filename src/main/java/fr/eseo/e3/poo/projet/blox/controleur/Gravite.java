@@ -48,11 +48,15 @@ public class Gravite implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        if (this.puits != null && this.puits.getPieceActuelle() != null) {
-            // 1. On applique la gravité (ce qui gère aussi la collision au besoin).
-            this.puits.gravite();
+        // On stoppe le Timer si le jeu est fini
+        if (this.puits != null && this.puits.isPartieTerminee()) {
+            this.timer.stop();
+            this.vuePuits.repaint(); // Un dernier rafraîchissement pour l'écran de fin
+            return;
+        }
 
-            // 2. On rafraîchit l'affichage pour voir la pièce descendre
+        if (this.puits != null && this.puits.getPieceActuelle() != null) {
+            this.puits.gravite();
             this.vuePuits.repaint();
         }
     }

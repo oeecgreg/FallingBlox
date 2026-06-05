@@ -36,7 +36,7 @@ public class PieceDeplacement extends MouseAdapter {
 
     @Override
     public void mouseMoved(MouseEvent event) {
-        if (this.puits != null && this.puits.getPieceActuelle() != null) {
+        if (this.puits != null && this.puits.getPieceActuelle() != null && !this.puits.isPartieTerminee()) {
             int colonneActuelle = event.getX() / this.vuePuits.getTaille();
 
             if (this.colonnePrecedente == -1) {
@@ -62,14 +62,14 @@ public class PieceDeplacement extends MouseAdapter {
     }
     @Override
     public void mouseEntered(MouseEvent event) {
-        // NOUVEAU : Réinitialise la colonne quand la souris rentre dans le panneau
+        // Réinitialise la colonne quand la souris rentre dans le panneau
         // Cela évite un "saut" brusque de la pièce.
         this.colonnePrecedente = -1;
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent event) {
-        if (this.puits != null && this.puits.getPieceActuelle() != null) {
+        if (this.puits != null && this.puits.getPieceActuelle() != null && !this.puits.isPartieTerminee()) {
             if (event.getWheelRotation() > 0) {
                 // AJOUT DU BLOC TRY...CATCH
                 try {

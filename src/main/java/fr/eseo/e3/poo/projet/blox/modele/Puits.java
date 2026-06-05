@@ -17,6 +17,8 @@ public class Puits {
     // Constantes d'identification des propriétés modifiées
     public static final String MODIFICATION_PIECE_ACTUELLE = "pieceActuelle";
     public static final String MODIFICATION_PIECE_SUIVANTE = "pieceSuivante";
+    public static final String MODIFICATION_PARTIE_TERMINEE = "partieTerminee";
+    private boolean partieTerminee = false;
 
     private int largeur;
     private int profondeur;
@@ -193,14 +195,19 @@ public class Puits {
      * et génération de la pièce suivante.
      */
     private void gererCollision() {
-        // 1. On verse les blocs de la pièce actuelle dans le Tas
         if (this.tas != null && this.pieceActuelle != null) {
             this.tas.ajouterElements(this.pieceActuelle);
+
+            // Vérification du Game Over
+            for (Element element : this.pieceActuelle.getElements()) {
+                if (element != null && element.getCoordonnees().getOrdonnee() <= 0) {
+                    this.setPartieTerminee(true); // La grille est pleine !
+                    return; // On arrête tout, on ne génère pas de nouvelle pièce
+                }
+            }
         }
 
-        // 2. On fait tomber la pièce suivante et on en génère une nouvelle
-        // (La méthode setPieceSuivante que vous avez déjà écrite se charge
-        // de faire passer la pieceSuivante dans la pieceActuelle).
+        // Si tout va bien, on continue le jeu
         this.setPieceSuivante(UsineDePiece.genererTetromino());
     }
 
@@ -218,5 +225,15 @@ public class Puits {
                 }
             }
         }
+    }
+
+    public boolean isPartieTerminee() {
+        return this.partieTerminee;
+    }
+
+    public void setPartieTerminee(boolean partieTerminee) {
+        boolean ancienneValeur = this.partieTerminee;
+        this.partieTerminee = partieTerminee;
+        this.pcs.firePropertyChange(MODIFICATION_PARTIE_TERMINEE, ancienneValeur, this.partieTerminee);
     }
 }

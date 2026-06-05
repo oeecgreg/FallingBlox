@@ -202,6 +202,24 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
             this.vuePiece.afficherPiece(g2D);
         }
 
+        // NOUVEAU : Affichage de l'écran Game Over
+        if (this.puits != null && this.puits.isPartieTerminee()) {
+            // 1. Applique un voile noir semi-transparent sur tout le jeu
+            g2D.setColor(new Color(0, 0, 0, 150));
+            g2D.fillRect(0, 0, largeurMax, profondeurMax);
+
+            // 2. Écrit "GAME OVER" en rouge au centre
+            g2D.setColor(Color.RED);
+            g2D.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 30));
+
+            String msg = "GAME OVER";
+            java.awt.FontMetrics fm = g2D.getFontMetrics();
+            int xText = (largeurMax - fm.stringWidth(msg)) / 2;
+            int yText = (profondeurMax / 2);
+
+            g2D.drawString(msg, xText, yText);
+        }
+
         g2D.dispose();
     }
 }
