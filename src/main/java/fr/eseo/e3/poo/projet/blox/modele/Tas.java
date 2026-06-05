@@ -3,6 +3,7 @@ package fr.eseo.e3.poo.projet.blox.modele;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import fr.eseo.e3.poo.projet.blox.modele.pieces.Piece;
 
 public class Tas {
 
@@ -68,9 +69,10 @@ public class Tas {
 
     /**
      * Algorithme de construction aléatoire du tas initial au fond du puits.
+     *
      * @param nbElements Nombre d'Elements pour la construction du tas.
-     * @param nbLignes Nombre de lignes pour la construction du tas.
-     * @param rand Entier aléatoire pour répartir les éléments.
+     * @param nbLignes   Nombre de lignes pour la construction du tas.
+     * @param rand       Entier aléatoire pour répartir les éléments.
      */
     public void construireTas(int nbElements, int nbLignes, Random rand) {
         // 1. Validations de sécurité fondamentales
@@ -114,6 +116,20 @@ public class Tas {
                 Element nouvelElement = new Element(new Coordonnees(x, y), couleurAleatoire);
                 this.elements.add(nouvelElement);
                 elementsPlaces++;
+            }
+        }
+    }
+
+    /**
+     * Ajoute tous les éléments de la pièce passée en paramètre dans la liste du Tas.
+     * C'est cette méthode qui "disloque" la pièce lorsqu'elle touche le fond.
+     */
+    public void ajouterElements(Piece piece) {
+        if (piece != null && piece.getElements() != null) {
+            for (Element element : piece.getElements()) {
+                if (element != null) {
+                    this.elements.add(element);
+                }
             }
         }
     }

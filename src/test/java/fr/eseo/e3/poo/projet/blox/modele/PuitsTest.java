@@ -1,5 +1,6 @@
 package fr.eseo.e3.poo.projet.blox.modele;
 
+import fr.eseo.e3.poo.projet.blox.modele.pieces.Piece;
 import org.junit.jupiter.api.Test;
 
 import fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos.OTetromino;
@@ -101,5 +102,28 @@ public class PuitsTest {
                 "Piece Actuelle : <aucune>\n" +
                 "Piece Suivante : <aucune>";
         assertEquals(attenduVide, puits.toString());
+    }
+
+    @Test
+    public void testGraviteEtCollision() {
+        Puits puits = new Puits(10, 15);
+        UsineDePiece.setMode(UsineDePiece.ALEATOIRE_PIECE);
+
+        // On initialise le cycle de pièces
+        puits.setPieceSuivante(UsineDePiece.genererTetromino());
+        puits.setPieceSuivante(UsineDePiece.genererTetromino());
+
+        // On force la pièce actuelle à être tout en bas (Y = 14)
+        Piece pieceTest = puits.getPieceActuelle();
+        pieceTest.setPositions(5, 14);
+
+        // On applique la gravité, ce qui devrait provoquer une collision
+        puits.gravite();
+
+        // On vérifie que le tas a bien absorbé la pièce (il doit avoir 4 blocs)
+        assertEquals(4, puits.getTas().getElements().size(), "Le tas n'a pas absorbé les blocs de la pièce après collision");
+
+        // On vérifie que la pièce actuelle a bien été remplacée
+        assertNotEquals(pieceTest, puits.getPieceActuelle(), "La pièce actuelle n'a pas été remplacée par la pièce suivante");
     }
 }

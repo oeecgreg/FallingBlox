@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import fr.eseo.e3.poo.projet.blox.modele.pieces.Piece;
+import fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos.ITetromino;
 import org.junit.jupiter.api.Test;
 import java.util.Random;
 
@@ -69,5 +71,15 @@ public class TasTest {
         // 2 lignes * 10 de largeur = 20 places max. On en demande 25.
         assertThrows(IllegalArgumentException.class, () -> new Tas(puits, 25, 2),
                 "Demander plus d'éléments que de places disponibles doit lever une exception");
+    }
+
+    @Test
+    public void testAjouterElements() {
+        Tas tas = new Tas(new Puits());
+        Piece piece = new ITetromino(new Coordonnees(5, 14), Couleur.ORANGE);
+
+        tas.ajouterElements(piece);
+
+        assertEquals(4, tas.getElements().size(), "Le tas devrait contenir les 4 blocs de la pièce");
     }
 }

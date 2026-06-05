@@ -3,6 +3,8 @@ package fr.eseo.e3.poo.projet.blox.modele;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import fr.eseo.e3.poo.projet.blox.modele.pieces.Piece;
+import fr.eseo.e3.poo.projet.blox.modele.BloxException;
+import fr.eseo.e3.poo.projet.blox.modele.UsineDePiece;
 
 /**
  * Classe servant à l'affichage de la grille de jeu.
@@ -184,5 +186,37 @@ public class Puits {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * Gère la collision d'une pièce : transfert de ses éléments au Tas
+     * et génération de la pièce suivante.
+     */
+    private void gererCollision() {
+        // 1. On verse les blocs de la pièce actuelle dans le Tas
+        if (this.tas != null && this.pieceActuelle != null) {
+            this.tas.ajouterElements(this.pieceActuelle);
+        }
+
+        // 2. On fait tomber la pièce suivante et on en génère une nouvelle
+        // (La méthode setPieceSuivante que vous avez déjà écrite se charge
+        // de faire passer la pieceSuivante dans la pieceActuelle).
+        this.setPieceSuivante(UsineDePiece.genererTetromino());
+    }
+
+    /**
+     * Tente de faire descendre la pièce d'une case.
+     */
+    public void gravite() {
+        if (this.pieceActuelle != null) {
+            try {
+                this.pieceActuelle.deplacerDe(0, 1);
+            } catch (BloxException e) {
+                // Si la pièce heurte le fond ou un bloc du tas, elle déclenche la collision
+                if (e.getCode() == BloxException.BLOX_COLLISION) {
+                    this.gererCollision();
+                }
+            }
+        }
     }
 }
