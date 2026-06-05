@@ -16,8 +16,8 @@ import fr.eseo.e3.poo.projet.blox.modele.pieces.Piece;
 public class PanneauInformation extends JPanel implements PropertyChangeListener {
 
     private VuePiece vuePiece;
-    // NOUVEAU : Attribut pour stocker la valeur du score à afficher
     private int score = 0;
+    private int lignes = 0; // NOUVEAU
 
     public PanneauInformation(Puits puits) {
         if (puits != null) {
@@ -45,9 +45,13 @@ public class PanneauInformation extends JPanel implements PropertyChangeListener
         }
         // 2. NOUVEAU : Si la notification concerne une modification du score
         else if (Puits.MODIFICATION_SCORE.equals(event.getPropertyName())) {
-            // On met à jour la variable locale avec le nouveau score
             this.score = (int) event.getNewValue();
-            this.repaint(); // On demande à redessiner le panneau
+            this.repaint();
+        }
+        // NOUVEAU
+        else if (Puits.MODIFICATION_LIGNES.equals(event.getPropertyName())) {
+            this.lignes = (int) event.getNewValue();
+            this.repaint();
         }
     }
 
@@ -62,18 +66,22 @@ public class PanneauInformation extends JPanel implements PropertyChangeListener
         }
 
         // B. NOUVEAU : Dessin du texte du Score (en bas)
+        // B. Dessin des informations (en bas)
         g2D.setColor(Color.BLACK);
-        g2D.setFont(new Font("Arial", Font.BOLD, 16));
+        g2D.setFont(new Font("Arial", Font.BOLD, 14));
+
+        int niveau = this.lignes / 10;
+
         String texteScore = "Score : " + this.score;
+        String texteLignes = "Lignes : " + this.lignes;
+        String texteNiveau = "Niveau : " + niveau;
 
-        // Petite formule mathématique pour centrer le texte horizontalement
         java.awt.FontMetrics fm = g2D.getFontMetrics();
-        int largeurTexte = fm.stringWidth(texteScore);
-        int coordX = (this.getWidth() - largeurTexte) / 2;
-        int coordY = this.getHeight() - 20; // Placé 20 pixels au-dessus du bord inférieur
 
-        g2D.drawString(texteScore, coordX, coordY);
-
+        // On affiche les 3 textes les uns sous les autres
+        g2D.drawString(texteNiveau, (this.getWidth() - fm.stringWidth(texteNiveau)) / 2, this.getHeight() - 45);
+        g2D.drawString(texteLignes, (this.getWidth() - fm.stringWidth(texteLignes)) / 2, this.getHeight() - 25);
+        g2D.drawString(texteScore, (this.getWidth() - fm.stringWidth(texteScore)) / 2, this.getHeight() - 5);
         g2D.dispose();
     }
 }

@@ -56,6 +56,10 @@ public class ControleurClavier extends KeyAdapter {
                         // pour bénéficier de la gestion automatique des collisions !
                         this.puits.gravite();
                         break;
+                    // NOUVEAU : Touche C pour échanger la pièce
+                    case KeyEvent.VK_C:
+                        this.puits.echangerPiece();
+                        break;
                 }
                 this.vuePuits.repaint();
             } catch (BloxException | IllegalArgumentException e) {

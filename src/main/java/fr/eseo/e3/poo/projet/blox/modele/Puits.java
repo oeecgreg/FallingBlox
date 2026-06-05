@@ -37,6 +37,11 @@ public class Puits {
     public static final String MODIFICATION_PAUSE = "pause";
     private boolean partieEnPause = false;
 
+    public static final String MODIFICATION_LIGNES = "lignes";
+
+    private int nbLignesSupprimees = 0;
+    private boolean echangeAutorise = true; // Permet un seul échange par chute
+
     // --- Constructeurs ---
 
     /**
@@ -212,23 +217,29 @@ public class Puits {
                 }
             }
 
-            // 2. NOUVEAU : Suppression des lignes et calcul du score
+            // 2. Suppression des lignes, calcul du score et du NIVEAU
             int lignesDetruites = this.tas.supprimerLignes();
             if (lignesDetruites > 0) {
+                // Score
                 int pointsGagnes = 0;
-                // Barème classique de Tetris
                 switch (lignesDetruites) {
                     case 1: pointsGagnes = 100; break;
                     case 2: pointsGagnes = 300; break;
                     case 3: pointsGagnes = 500; break;
-                    case 4: pointsGagnes = 800; break; // "TETRIS !"
+                    case 4: pointsGagnes = 800; break;
                     default: pointsGagnes = 1000;
                 }
                 this.setScore(this.getScore() + pointsGagnes);
+
+                // Lignes (déclenche l'accélération)
+                int anciennesLignes = this.nbLignesSupprimees;
+                this.nbLignesSupprimees += lignesDetruites;
+                this.pcs.firePropertyChange(MODIFICATION_LIGNES, anciennesLignes, this.nbLignesSupprimees);
             }
         }
 
         // 3. On continue le jeu
+        this.echangeAutorise = true; // On redonne le droit d'échanger la nouvelle pièce
         this.setPieceSuivante(UsineDePiece.genererTetromino());
     }
 
@@ -277,5 +288,32 @@ public class Puits {
         boolean ancienneValeur = this.partieEnPause;
         this.partieEnPause = partieEnPause;
         this.pcs.firePropertyChange(MODIFICATION_PAUSE, ancienneValeur, this.partieEnPause);
+    }
+
+    /**
+     * Permet d'échanger la pièce actuelle avec la pièce suivante.
+     * Cette action n'est autorisée qu'une seule fois par chute.
+     */
+    public void echangerPiece() {
+        if (!this.echangeAutorise || this.pieceActuelle == null || this.pieceSuivante == null) {
+            return;
+        }
+
+        // Sauvegarde temporaire
+        Piece ancienneActuelle = this.pieceActuelle;
+        Piece ancienneSuivante = this.pieceSuivante;
+
+        // Inversion
+        this.pieceActuelle = ancienneSuivante;
+        this.pieceActuelle.setPositions(this.largeur / 2, -4); // On place la nouvelle tout en haut
+
+        this.pieceSuivante = ancienneActuelle;
+
+        // On bloque l'échange jusqu'à la prochaine collision
+        this.echangeAutorise = false;
+
+        // On notifie la Vue pour mettre à jour l'écran
+        this.pcs.firePropertyChange(MODIFICATION_PIECE_ACTUELLE, ancienneActuelle, this.pieceActuelle);
+        this.pcs.firePropertyChange(MODIFICATION_PIECE_SUIVANTE, ancienneSuivante, this.pieceSuivante);
     }
 }
