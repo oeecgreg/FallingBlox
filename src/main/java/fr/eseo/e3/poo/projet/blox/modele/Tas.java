@@ -133,4 +133,57 @@ public class Tas {
             }
         }
     }
+
+    /**
+     * Vérifie le tas de bas en haut et supprime les lignes complètes.
+     * Fait descendre les blocs situés au-dessus des lignes supprimées.
+     * * @return Le nombre de lignes supprimées simultanément.
+     */
+    public int supprimerLignes() {
+        if (this.puits == null) return 0;
+
+        int lignesSupprimees = 0;
+        int y = this.puits.getProfondeur() - 1; // On commence par la ligne tout en bas
+
+        while (y >= 0) {
+            // 1. Compter les éléments présents sur la ligne 'y'
+            int elementsSurLigne = 0;
+            for (Element e : this.elements) {
+                if (e.getCoordonnees().getOrdonnee() == y) {
+                    elementsSurLigne++;
+                }
+            }
+
+            // 2. Si la ligne est pleine (autant d'éléments que la largeur du puits)
+            if (elementsSurLigne == this.puits.getLargeur()) {
+                lignesSupprimees++;
+
+                // A. Supprimer tous les éléments de cette ligne
+                // (On utilise removeIf, très pratique pour filtrer une liste)
+                final int ligneASupprimer = y;
+                this.elements.removeIf(e -> e.getCoordonnees().getOrdonnee() == ligneASupprimer);
+
+                // B. Faire descendre d'une case tous les éléments situés strictement AU-DESSUS (< y)
+                for (Element e : this.elements) {
+                    if (e.getCoordonnees().getOrdonnee() < y) {
+                        try {
+                            e.deplacerDe(0, 1);
+                        } catch (Exception ex) {
+                            // On ignore, la méthode deplacerDe d'Element ne lance normalement pas d'exception
+                        }
+                    }
+                }
+
+                // ATTENTION : On ne décrémente pas 'y' ici !
+                // Comme on vient de faire descendre la ligne du dessus, la nouvelle ligne
+                // à l'index 'y' doit être revérifiée à la prochaine itération de la boucle.
+
+            } else {
+                // La ligne n'est pas pleine, on remonte vérifier la ligne du dessus
+                y--;
+            }
+        }
+
+        return lignesSupprimees;
+    }
 }

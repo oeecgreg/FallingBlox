@@ -31,6 +31,9 @@ public class Puits {
 
     private Tas tas;
 
+    public static final String MODIFICATION_SCORE = "score";
+    private int score = 0;
+
     // --- Constructeurs ---
 
     /**
@@ -198,16 +201,31 @@ public class Puits {
         if (this.tas != null && this.pieceActuelle != null) {
             this.tas.ajouterElements(this.pieceActuelle);
 
-            // Vérification du Game Over
+            // 1. Vérification du Game Over
             for (Element element : this.pieceActuelle.getElements()) {
                 if (element != null && element.getCoordonnees().getOrdonnee() <= 0) {
-                    this.setPartieTerminee(true); // La grille est pleine !
-                    return; // On arrête tout, on ne génère pas de nouvelle pièce
+                    this.setPartieTerminee(true);
+                    return;
                 }
+            }
+
+            // 2. NOUVEAU : Suppression des lignes et calcul du score
+            int lignesDetruites = this.tas.supprimerLignes();
+            if (lignesDetruites > 0) {
+                int pointsGagnes = 0;
+                // Barème classique de Tetris
+                switch (lignesDetruites) {
+                    case 1: pointsGagnes = 100; break;
+                    case 2: pointsGagnes = 300; break;
+                    case 3: pointsGagnes = 500; break;
+                    case 4: pointsGagnes = 800; break; // "TETRIS !"
+                    default: pointsGagnes = 1000;
+                }
+                this.setScore(this.getScore() + pointsGagnes);
             }
         }
 
-        // Si tout va bien, on continue le jeu
+        // 3. On continue le jeu
         this.setPieceSuivante(UsineDePiece.genererTetromino());
     }
 
@@ -235,5 +253,16 @@ public class Puits {
         boolean ancienneValeur = this.partieTerminee;
         this.partieTerminee = partieTerminee;
         this.pcs.firePropertyChange(MODIFICATION_PARTIE_TERMINEE, ancienneValeur, this.partieTerminee);
+    }
+
+    public int getScore() {
+        return this.score;
+    }
+
+    public void setScore(int score) {
+        int ancienScore = this.score;
+        this.score = score;
+        // On notifie les écouteurs que le score a changer.
+        this.pcs.firePropertyChange(MODIFICATION_SCORE, ancienScore, this.score);
     }
 }
