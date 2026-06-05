@@ -29,6 +29,7 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
     private PieceDeplacement pieceDeplacement;
     private PieceRotation pieceRotation;
 
+    private final VueTas vueTas;
     // --- Constructeurs ---
 
     /**
@@ -48,6 +49,7 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
         this.puits = puits;
         this.taille = taille;
         this.vuePiece = null;
+        this.vueTas = new VueTas(this);
 
         this.setBackground(Color.WHITE);
         this.mettreAJourTaille();
@@ -141,6 +143,10 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
         this.repaint(); // Force le rafraîchissement graphique immédiat de l'écran
     }
 
+    public VueTas getVueTas() {
+        return this.vueTas;
+    }
+
     /**
      * Méthode permettant de mettre à jour la taille du puits.
      */
@@ -185,6 +191,10 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
 
         for (int y = 0; y <= profondeurMax; y += this.taille) {
             g2D.drawLine(0, y, largeurMax, y);
+        }
+
+        if (this.vueTas != null) {
+            this.vueTas.afficher(g2D);
         }
 
         if (this.vuePiece != null) {

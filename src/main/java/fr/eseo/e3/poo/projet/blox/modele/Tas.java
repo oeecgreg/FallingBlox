@@ -28,6 +28,7 @@ public class Tas {
     /**
      * Constructeur à deux arguments.
      * Calcule le nombre de lignes nécessaires d'après la formule spécifiée.
+     *
      */
     public Tas(Puits puits, int nbElements) {
         this(puits, nbElements, (puits != null) ? (nbElements / puits.getLargeur() + 1) : 0);
@@ -67,6 +68,9 @@ public class Tas {
 
     /**
      * Algorithme de construction aléatoire du tas initial au fond du puits.
+     * @param nbElements Nombre d'Elements pour la construction du tas.
+     * @param nbLignes Nombre de lignes pour la construction du tas.
+     * @param rand Entier aléatoire pour répartir les éléments.
      */
     public void construireTas(int nbElements, int nbLignes, Random rand) {
         // 1. Validations de sécurité fondamentales

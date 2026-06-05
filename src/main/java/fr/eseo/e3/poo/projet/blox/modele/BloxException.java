@@ -3,7 +3,7 @@ package fr.eseo.e3.poo.projet.blox.modele;
 /**
  * Exception spécifique au jeu FallingBlox permettant de signaler
  * les anomalies de déplacement (collisions, sorties du puits).
- * * Étant une checked exception (héritant de Exception), elle doit obligatoirement
+ * Étant une checked exception (héritant de Exception), elle doit obligatoirement
  * être capturée (try-catch) ou propagée (throws).
  */
 public class BloxException extends Exception {
@@ -31,7 +31,7 @@ public class BloxException extends Exception {
      * Accesseur permettant de lire l'entier représentant la cause de l'exception.
      * * Note : Nous n'utilisons pas le nom "getCause()" car cette méthode existe déjà
      * dans la classe Throwable de Java et retourne un objet de type Throwable.
-     * * @return L'entier codant la raison de la levée d'exception.
+     * @return L'entier codant la raison de la levée d'exception.
      */
     public int getCode() {
         return this.codeCause;
