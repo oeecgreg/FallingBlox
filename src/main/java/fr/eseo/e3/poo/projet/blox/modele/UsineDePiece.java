@@ -2,91 +2,66 @@ package fr.eseo.e3.poo.projet.blox.modele;
 
 import java.util.Random;
 
-import fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos.ITetromino;
-import fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos.OTetromino;
-import fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos.Tetromino;
+import fr.eseo.e3.poo.projet.blox.modele.pieces.tetrominos.*;
 
-/**
- * Classe servant à la génération de pièces avec différents modes de génération : <br>
- * - ALEATOIRE_COMPLET | Choisis un type de tetromino aléatoirement, en utilisant une couleur aléatoire. <br>
- * - ALEATOIRE_PIECE | Choisis un type de tetromino aléatoirement, en utilisant la même couleur pour le même type de Tetromino. <br>
- * - CYCLIC | Choisis dans l’ordre les tetrominos (OTetromino, puis ITetromino, …, OTetromino, …) en respectant les couleurs utilisées.
- */
 public class UsineDePiece {
 
-    // Constantes pour les différents modes de l'usine
     public static final int ALEATOIRE_COMPLET = 0;
     public static final int ALEATOIRE_PIECE = 1;
     public static final int CYCLIC = 2;
 
-    // Mode actuel (par défaut : ALEATOIRE_PIECE)
     private static int mode = ALEATOIRE_PIECE;
-
-    // Générateur de nombres aléatoires
     private static final Random random = new Random();
-
-    // Compteur pour le mode cyclique (pour savoir à qui le tour)
     private static int compteurCyclique = 0;
 
-    /**
-     * Constructeur privé pour empêcher l'instanciation de cette classe.
-     * Toutes les méthodes sont statiques.
-     */
-    private UsineDePiece() {
-    }
+    private UsineDePiece() {}
 
-    /**
-     * Méthode définissant le mode de fonctionnement de l'usine.
-     * Si on passe en mode CYCLIC, on réinitialise pour que la prochaine soit un OTetromino.
-     * @param nouveauMode Choix du nouveau mode parmi ceux définis.
-     */
     public static void setMode(int nouveauMode) {
         mode = nouveauMode;
         if (mode == CYCLIC) {
-            compteurCyclique = 0; // 0 correspondra au OTetromino
+            compteurCyclique = 0;
         }
     }
 
     /**
-     * Méthode permettant la génération d'une pièce aux coordonnées (2, 3) selon le mode actuel.
-     * @return Renvoie la pièce qui est générée.
+     * Méthode interne pour centraliser la création de la pièce en fonction de son index (0 à 6)
      */
+    private static Tetromino creerPiece(int type, Coordonnees coord, Couleur couleur) {
+        switch (type) {
+            case 0: return new OTetromino(coord, couleur);
+            case 1: return new ITetromino(coord, couleur);
+            case 2: return new TTetromino(coord, couleur);
+            case 3: return new LTetromino(coord, couleur);
+            case 4: return new JTetromino(coord, couleur);
+            case 5: return new STetromino(coord, couleur);
+            case 6: return new ZTetromino(coord, couleur);
+            default: return new OTetromino(coord, couleur); // Sécurité
+        }
+    }
+
     public static Tetromino genererTetromino() {
         Coordonnees coordInitiales = new Coordonnees(2, 3);
-        Tetromino pieceGeneree = null;
+        Couleur[] toutesLesCouleurs = Couleur.values();
 
         if (mode == ALEATOIRE_COMPLET) {
-            // Choix aléatoire de la forme (0 ou 1) et de la couleur
-            int choixForme = random.nextInt(2);
-            Couleur[] toutesLesCouleurs = Couleur.values();
+            int choixForme = random.nextInt(7); // 7 pièces
             Couleur couleurAleatoire = toutesLesCouleurs[random.nextInt(toutesLesCouleurs.length)];
-
-            if (choixForme == 0) {
-                pieceGeneree = new OTetromino(coordInitiales, couleurAleatoire);
-            } else {
-                pieceGeneree = new ITetromino(coordInitiales, couleurAleatoire);
-            }
+            return creerPiece(choixForme, coordInitiales, couleurAleatoire);
 
         } else if (mode == ALEATOIRE_PIECE) {
-            // Choix aléatoire de la forme, mais couleur fixe par défaut
-            int choixForme = random.nextInt(2);
-            if (choixForme == 0) {
-                pieceGeneree = new OTetromino(coordInitiales, Couleur.ROUGE); // Couleur typique du O.
-            } else {
-                pieceGeneree = new ITetromino(coordInitiales, Couleur.ORANGE); // Couleur typique du I.
-            }
+            int choixForme = random.nextInt(7);
+            Couleur couleurFixe = toutesLesCouleurs[choixForme]; // Associe 1 couleur = 1 forme
+            return creerPiece(choixForme, coordInitiales, couleurFixe);
 
-        } else if (mode == CYCLIC) {
-            // Alternance stricte : O, puis I, puis O, etc.
-            if (compteurCyclique == 0) {
-                pieceGeneree = new OTetromino(coordInitiales, Couleur.ROUGE);
-                compteurCyclique = 1;
-            } else {
-                pieceGeneree = new ITetromino(coordInitiales, Couleur.ORANGE);
+        } else { // CYCLIC
+            Couleur couleurFixe = toutesLesCouleurs[compteurCyclique];
+            Tetromino pieceGeneree = creerPiece(compteurCyclique, coordInitiales, couleurFixe);
+
+            compteurCyclique++;
+            if (compteurCyclique > 6) {
                 compteurCyclique = 0;
             }
+            return pieceGeneree;
         }
-
-        return pieceGeneree;
     }
 }

@@ -14,6 +14,7 @@ import fr.eseo.e3.poo.projet.blox.controleur.PieceRotation;
 import fr.eseo.e3.poo.projet.blox.modele.Puits;
 import fr.eseo.e3.poo.projet.blox.modele.pieces.Piece;
 
+
 // La classe implémente désormais formellement le contrat PropertyChangeListener
 
 /**
