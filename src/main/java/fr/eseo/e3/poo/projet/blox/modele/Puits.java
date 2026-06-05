@@ -34,6 +34,9 @@ public class Puits {
     public static final String MODIFICATION_SCORE = "score";
     private int score = 0;
 
+    public static final String MODIFICATION_PAUSE = "pause";
+    private boolean partieEnPause = false;
+
     // --- Constructeurs ---
 
     /**
@@ -264,5 +267,15 @@ public class Puits {
         this.score = score;
         // On notifie les écouteurs que le score a changer.
         this.pcs.firePropertyChange(MODIFICATION_SCORE, ancienScore, this.score);
+    }
+
+    public boolean isPartieEnPause() {
+        return this.partieEnPause;
+    }
+
+    public void setPartieEnPause(boolean partieEnPause) {
+        boolean ancienneValeur = this.partieEnPause;
+        this.partieEnPause = partieEnPause;
+        this.pcs.firePropertyChange(MODIFICATION_PAUSE, ancienneValeur, this.partieEnPause);
     }
 }

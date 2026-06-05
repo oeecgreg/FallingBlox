@@ -48,14 +48,14 @@ public class Gravite implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        // On stoppe le Timer si le jeu est fini
         if (this.puits != null && this.puits.isPartieTerminee()) {
             this.timer.stop();
-            this.vuePuits.repaint(); // Un dernier rafraîchissement pour l'écran de fin
+            this.vuePuits.repaint();
             return;
         }
 
-        if (this.puits != null && this.puits.getPieceActuelle() != null) {
+        // AJOUT : && !this.puits.isPartieEnPause()
+        if (this.puits != null && this.puits.getPieceActuelle() != null && !this.puits.isPartieEnPause()) {
             this.puits.gravite();
             this.vuePuits.repaint();
         }

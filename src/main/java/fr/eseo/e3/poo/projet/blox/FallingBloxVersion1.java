@@ -33,7 +33,7 @@ public class FallingBloxVersion1 {
                 }
 
                 // 2. Création des Vues
-                VuePuits vuePuits = new VuePuits(puits);
+                VuePuits vuePuits = new VuePuits(puits, 35);
                 PanneauInformation panneauInfo = new PanneauInformation(puits);
 
                 // 3. Configuration de la Fenêtre Principale (JFrame)

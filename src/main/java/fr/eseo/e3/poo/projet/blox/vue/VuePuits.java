@@ -9,6 +9,7 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.JPanel;
 
+import fr.eseo.e3.poo.projet.blox.controleur.ControleurClavier;
 import fr.eseo.e3.poo.projet.blox.controleur.PieceDeplacement;
 import fr.eseo.e3.poo.projet.blox.controleur.PieceRotation;
 import fr.eseo.e3.poo.projet.blox.modele.Puits;
@@ -31,6 +32,8 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
     private PieceRotation pieceRotation;
 
     private final VueTas vueTas;
+    private ControleurClavier controleurClavier;
+    private final VueOmbre vueOmbre;
     // --- Constructeurs ---
 
     /**
@@ -51,6 +54,7 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
         this.taille = taille;
         this.vuePiece = null;
         this.vueTas = new VueTas(this);
+        this.vueOmbre = new VueOmbre(this);
 
         this.setBackground(Color.WHITE);
         this.mettreAJourTaille();
@@ -68,6 +72,14 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
         // Configuration de l'unique contrôleur de rotation
         this.pieceRotation = new PieceRotation(this);
         this.addMouseListener(this.pieceRotation); // Enregistré en tant que MouseListener
+
+        // NOUVEAU : Configuration du contrôleur clavier
+        this.controleurClavier = new ControleurClavier(this);
+        this.addKeyListener(this.controleurClavier);
+
+        // Permet au panneau de recevoir les événements clavier
+        this.setFocusable(true);
+        this.requestFocusInWindow();
     }
 
     // --- Accesseurs et Mutateurs ---
@@ -103,6 +115,11 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
         // On met à jour le puits pour la rotation
         if (this.pieceRotation != null) {
             this.pieceRotation.setPuits(this.puits);
+        }
+
+        // Dans setPuits(Puits puits), ajoutez :
+        if (this.controleurClavier != null) {
+            this.controleurClavier.setPuits(this.puits);
         }
 
         this.mettreAJourTaille();
@@ -198,8 +215,26 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
             this.vueTas.afficher(g2D);
         }
 
+        if (this.vueOmbre != null) {
+            this.vueOmbre.afficher(g2D);
+        }
+
         if (this.vuePiece != null) {
             this.vuePiece.afficherPiece(g2D);
+        }
+
+        // NOUVEAU : Affichage de l'écran PAUSE
+        if (this.puits != null && this.puits.isPartieEnPause() && !this.puits.isPartieTerminee()) {
+            g2D.setColor(new Color(0, 0, 0, 100)); // Voile noir très léger
+            g2D.fillRect(0, 0, largeurMax, profondeurMax);
+
+            g2D.setColor(Color.WHITE);
+            g2D.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 30));
+            String msg = "PAUSE";
+            java.awt.FontMetrics fm = g2D.getFontMetrics();
+            int xText = (largeurMax - fm.stringWidth(msg)) / 2;
+            int yText = profondeurMax / 2;
+            g2D.drawString(msg, xText, yText);
         }
 
         // NOUVEAU : Affichage de l'écran Game Over
