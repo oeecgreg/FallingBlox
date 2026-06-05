@@ -60,14 +60,12 @@ public class FallingBloxVersion1 {
                 fenetre.setLocationRelativeTo(null);
                 fenetre.setVisible(true);
 
-                // --- NOUVEAU : GESTION DE LA FIN DE PARTIE ET DES SCORES ---
+                // --- GESTION DE LA FIN DE PARTIE ET DES SCORES ---
                 puits.addPropertyChangeListener(event -> {
                     if (Puits.MODIFICATION_PARTIE_TERMINEE.equals(event.getPropertyName())) {
                         boolean partieFini = (boolean) event.getNewValue();
 
                         if (partieFini) {
-                            // On utilise invokeLater pour s'assurer que le voile noir "GAME OVER"
-                            // a le temps de s'afficher en arrière-plan avant d'ouvrir le pop-up.
                             SwingUtilities.invokeLater(() -> {
                                 int scoreFinal = puits.getScore();
 
@@ -82,28 +80,10 @@ public class FallingBloxVersion1 {
                                 // 2. Si le joueur a tapé un nom, on sauvegarde
                                 if (nomJoueur != null && !nomJoueur.trim().isEmpty()) {
                                     GestionnaireScores.sauvegarderScore(nomJoueur.trim(), scoreFinal);
+
+                                    // 3. NOUVEAU : On ordonne au panneau latéral de mettre à jour son affichage
+                                    panneauInfo.chargerScores();
                                 }
-
-                                // 3. On récupère le Top 5 pour l'afficher
-                                List<GestionnaireScores.EntreeScore> meilleursScores = GestionnaireScores.chargerMeilleursScores();
-                                StringBuilder affichage = new StringBuilder("--- LEADERBOARD ---\n\n");
-
-                                int limite = Math.min(5, meilleursScores.size()); // On affiche max 5 scores
-                                for (int i = 0; i < limite; i++) {
-                                    affichage.append(i + 1).append(". ")
-                                            .append(meilleursScores.get(i).nom)
-                                            .append(" : ")
-                                            .append(meilleursScores.get(i).score)
-                                            .append(" pts\n");
-                                }
-
-                                // 4. On affiche le classement final
-                                JOptionPane.showMessageDialog(
-                                        fenetre,
-                                        affichage.toString(),
-                                        "Meilleurs Scores",
-                                        JOptionPane.INFORMATION_MESSAGE
-                                );
                             });
                         }
                     }

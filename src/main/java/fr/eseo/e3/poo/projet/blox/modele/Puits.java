@@ -316,4 +316,33 @@ public class Puits {
         this.pcs.firePropertyChange(MODIFICATION_PIECE_ACTUELLE, ancienneActuelle, this.pieceActuelle);
         this.pcs.firePropertyChange(MODIFICATION_PIECE_SUIVANTE, ancienneSuivante, this.pieceSuivante);
     }
+
+    /**
+     * Réinitialise entièrement le Puits pour commencer une nouvelle partie.
+     */
+    public void reinitialiser() {
+        // 1. On vide le tas
+        if (this.tas != null) {
+            this.tas.getElements().clear();
+        }
+
+        // 2. On réinitialise les statistiques
+        this.setScore(0);
+
+        int anciennesLignes = this.nbLignesSupprimees;
+        this.nbLignesSupprimees = 0;
+        this.pcs.firePropertyChange(MODIFICATION_LIGNES, anciennesLignes, this.nbLignesSupprimees);
+
+        // 3. On enlève les états de blocage
+        this.setPartieEnPause(false);
+        this.setPartieTerminee(false); // Cela va prévenir la Gravité de redémarrer !
+
+        // 4. On génère de nouvelles pièces
+        this.pieceActuelle = null;
+        this.pieceSuivante = null;
+        this.echangeAutorise = true;
+
+        this.setPieceSuivante(UsineDePiece.genererTetromino());
+        this.setPieceSuivante(UsineDePiece.genererTetromino());
+    }
 }

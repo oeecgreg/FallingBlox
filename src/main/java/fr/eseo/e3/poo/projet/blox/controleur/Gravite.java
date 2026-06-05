@@ -34,14 +34,19 @@ public class Gravite implements ActionListener, PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        // NOUVEAU : Si le nombre de lignes a changé, on recalcule la vitesse !
         if (Puits.MODIFICATION_LIGNES.equals(evt.getPropertyName())) {
             int lignes = (int) evt.getNewValue();
-            int niveau = lignes / 10; // Niveau augmente toutes les 10 lignes
-
-            // On réduit le délai de 40ms par niveau (avec une limite max de vitesse à 80ms)
+            int niveau = lignes / 10;
             int nouveauDelai = Math.max(80, 500 - (niveau * 40));
             this.timer.setDelay(nouveauDelai);
+        }
+        // NOUVEAU : On redémarre le timer si la partie n'est plus terminée (Rejouer)
+        else if (Puits.MODIFICATION_PARTIE_TERMINEE.equals(evt.getPropertyName())) {
+            boolean terminee = (boolean) evt.getNewValue();
+            if (!terminee) {
+                this.timer.setDelay(500); // On remet la vitesse initiale
+                this.timer.start();
+            }
         }
     }
 
