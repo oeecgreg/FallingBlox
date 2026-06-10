@@ -1,97 +1,100 @@
 package fr.eseo.e3.poo.projet.blox;
 
-import java.awt.BorderLayout;
-
-import javax.swing.JOptionPane;
-import java.util.List;
-import fr.eseo.e3.poo.projet.blox.modele.GestionnaireScores;
-
+import java.awt.*;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import fr.eseo.e3.poo.projet.blox.controleur.Gravite;
+import fr.eseo.e3.poo.projet.blox.modele.GestionnaireScores;
 import fr.eseo.e3.poo.projet.blox.modele.Puits;
 import fr.eseo.e3.poo.projet.blox.modele.UsineDePiece;
+import fr.eseo.e3.poo.projet.blox.vue.MenuPrincipal;
 import fr.eseo.e3.poo.projet.blox.vue.PanneauInformation;
 import fr.eseo.e3.poo.projet.blox.vue.VuePuits;
 
 public class FallingBloxVersion1 {
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                Puits puits;
+        SwingUtilities.invokeLater(() -> {
 
-                // 1. Analyse des arguments de la ligne de commande pour le Tas initial
-                if (args.length == 1) {
-                    int nbElements = Integer.parseInt(args[0]);
-                    int nbLignes = (nbElements / Puits.LARGEUR_PAR_DEFAUT) + 1;
-                    puits = new Puits(Puits.LARGEUR_PAR_DEFAUT, Puits.PROFONDEUR_PAR_DEFAUT, nbElements, nbLignes);
-                } else if (args.length >= 2) {
-                    int nbElements = Integer.parseInt(args[0]);
-                    int nbLignes = Integer.parseInt(args[1]);
-                    puits = new Puits(Puits.LARGEUR_PAR_DEFAUT, Puits.PROFONDEUR_PAR_DEFAUT, nbElements, nbLignes);
-                } else {
-                    puits = new Puits(); // Aucun argument = puits vide
-                }
+            // 1. Configuration de la fenêtre en Plein Écran total
+            JFrame fenetre = new JFrame("Falling Blox - Master Edition");
+            fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            fenetre.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            fenetre.setUndecorated(true); // Supprime la barre supérieure pour combler tout l'écran
 
-                // 2. Création des Vues
-                VuePuits vuePuits = new VuePuits(puits, 35);
-                PanneauInformation panneauInfo = new PanneauInformation(puits);
+            // 2. Gestionnaire d'écrans (CardLayout)
+            CardLayout cardLayout = new CardLayout();
+            JPanel conteneurEcrans = new JPanel(cardLayout);
+            fenetre.add(conteneurEcrans);
 
-                // 3. Configuration de la Fenêtre Principale (JFrame)
-                JFrame fenetre = new JFrame("Falling Blox");
-                fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                fenetre.setLayout(new BorderLayout());
+            // --- INSTANCIATION DE LA ZONE DE JEU ---
+// --- INSTANCIATION DE LA ZONE DE JEU ---
+            JPanel ecranJeu = new JPanel(new BorderLayout());
+            Puits puitsJeu = new Puits(10, 20);
 
-                // 4. Ajout des composants aux bons endroits
-                fenetre.add(vuePuits, BorderLayout.CENTER);
-                fenetre.add(panneauInfo, BorderLayout.EAST);
+            // CORRECTION : On demande à la grille de prendre 100% de la hauteur de l'écran
+            java.awt.Dimension tailleEcran = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+            int tailleBloc = tailleEcran.height / puitsJeu.getProfondeur();
 
-                // 5. Initialisation du jeu
-                UsineDePiece.setMode(UsineDePiece.ALEATOIRE_PIECE);
-                puits.setPieceSuivante(UsineDePiece.genererTetromino());
-                puits.setPieceSuivante(UsineDePiece.genererTetromino()); // Déclenche l'affichage dans le PanneauInfo !
+            VuePuits vuePuitsJeu = new VuePuits(puitsJeu, tailleBloc);
+            PanneauInformation panneauInfo = new PanneauInformation(puitsJeu);
 
-                // 6. Affichage final de la fenêtre
-                fenetre.pack();
-                fenetre.setResizable(false);
-                fenetre.setLocationRelativeTo(null);
-                fenetre.setVisible(true);
+            JPanel centreurJeu = new JPanel();
+            centreurJeu.setBackground(Color.DARK_GRAY);
+            centreurJeu.add(vuePuitsJeu);
 
-                // --- GESTION DE LA FIN DE PARTIE ET DES SCORES ---
-                puits.addPropertyChangeListener(event -> {
-                    if (Puits.MODIFICATION_PARTIE_TERMINEE.equals(event.getPropertyName())) {
-                        boolean partieFini = (boolean) event.getNewValue();
+            ecranJeu.add(centreurJeu, BorderLayout.CENTER);
+            ecranJeu.add(panneauInfo, BorderLayout.EAST);
 
-                        if (partieFini) {
-                            SwingUtilities.invokeLater(() -> {
-                                int scoreFinal = puits.getScore();
+            // --- INSTANCIATION DU MENU PRINCIPAL ---
+            MenuPrincipal menuAccueil = new MenuPrincipal(() -> {
+                // Action exécutée au clic/touche : Bascule vers l'écran de jeu
+                cardLayout.show(conteneurEcrans, "JEU");
 
-                                // 1. On demande le nom du joueur
-                                String nomJoueur = JOptionPane.showInputDialog(
-                                        fenetre,
-                                        "Partie terminée ! Votre score est de : " + scoreFinal + "\nEntrez votre nom :",
-                                        "Nouveau Score !",
-                                        JOptionPane.QUESTION_MESSAGE
-                                );
+                // Initialisation des pièces du modèle de jeu
+                UsineDePiece.setMode(UsineDePiece.ALEATOIRE_COMPLET);
+                puitsJeu.setPieceSuivante(UsineDePiece.genererTetromino());
+                puitsJeu.setPieceSuivante(UsineDePiece.genererTetromino());
 
-                                // 2. Si le joueur a tapé un nom, on sauvegarde
-                                if (nomJoueur != null && !nomJoueur.trim().isEmpty()) {
-                                    GestionnaireScores.sauvegarderScore(nomJoueur.trim(), scoreFinal);
+                // Instanciation de l'horloge de chute
+                new Gravite(vuePuitsJeu);
 
-                                    // 3. NOUVEAU : On ordonne au panneau latéral de mettre à jour son affichage
-                                    panneauInfo.chargerScores();
-                                }
-                            });
-                        }
+                // Capture immédiate du focus clavier pour éviter les touches bloquées
+                vuePuitsJeu.requestFocusInWindow();
+            });
+
+            // 3. Assemblage des calques
+            conteneurEcrans.add(menuAccueil, "MENU");
+            conteneurEcrans.add(ecranJeu, "JEU");
+            cardLayout.show(conteneurEcrans, "MENU");
+
+            // 4. Écouteur de fin de partie pour l'enregistrement du score
+            puitsJeu.addPropertyChangeListener(event -> {
+                if (Puits.MODIFICATION_PARTIE_TERMINEE.equals(event.getPropertyName())) {
+                    boolean terminee = (boolean) event.getNewValue();
+                    if (terminee) {
+                        SwingUtilities.invokeLater(() -> {
+                            int scoreFinal = puitsJeu.getScore();
+                            String nom = JOptionPane.showInputDialog(
+                                    fenetre,
+                                    "Partie terminée !\nVotre score : " + scoreFinal + "\nEntrez votre nom :",
+                                    "Game Over",
+                                    JOptionPane.QUESTION_MESSAGE
+                            );
+                            if (nom != null && !nom.trim().isEmpty()) {
+                                GestionnaireScores.sauvegarderScore(nom.trim(), scoreFinal);
+                                panneauInfo.chargerScores();
+                            }
+                        });
                     }
-                });
+                }
+            });
 
-                // 7. Démarrage de la chute automatique
-                Gravite gravite = new Gravite(vuePuits);
-            }
+            fenetre.setVisible(true);
+            menuAccueil.requestFocusInWindow(); // Donne le focus au menu dès l'ouverture
         });
     }
 }

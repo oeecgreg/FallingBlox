@@ -29,18 +29,20 @@ public class PanneauInformation extends JPanel implements PropertyChangeListener
 
     public PanneauInformation(Puits puits) {
         this.puits = puits;
-        this.setLayout(null); // Nécessaire pour positionner le bouton manuellement
-        this.setPreferredSize(new Dimension(180, 525)); // Taille calée sur la hauteur du puits
+        this.setLayout(null);
+
+        // 1. On élargit le panneau à 250 pixels de large
+        this.setPreferredSize(new Dimension(250, 0));
 
         if (puits != null) {
             puits.addPropertyChangeListener(this);
             this.score = puits.getScore();
         }
 
-        // 1. Création du bouton Rejouer
         this.btnRejouer = new JButton("Rejouer");
-        this.btnRejouer.setBounds(40, 450, 100, 40); // (X, Y, Largeur, Hauteur)
-        this.btnRejouer.setFocusable(false); // CRUCIAL : Empêche le bouton de bloquer les touches du clavier !
+        // 2. On descend et on centre le bouton
+        this.btnRejouer.setBounds(75, 500, 100, 40);
+        this.btnRejouer.setFocusable(false);
 
         this.btnRejouer.addActionListener(e -> {
             if (this.puits != null) {
@@ -48,14 +50,9 @@ public class PanneauInformation extends JPanel implements PropertyChangeListener
             }
         });
         this.add(this.btnRejouer);
-
-        // 2. On charge les scores au démarrage
         this.chargerScores();
     }
 
-    /**
-     * Met à jour la liste des scores depuis le fichier et rafraîchit l'affichage.
-     */
     public void chargerScores() {
         this.meilleursScores = GestionnaireScores.chargerMeilleursScores();
         this.repaint();
@@ -65,7 +62,8 @@ public class PanneauInformation extends JPanel implements PropertyChangeListener
     public void propertyChange(PropertyChangeEvent event) {
         if (Puits.MODIFICATION_PIECE_SUIVANTE.equals(event.getPropertyName())) {
             Piece prochainePiece = (Piece) event.getNewValue();
-            this.vuePiece = (prochainePiece != null) ? new VuePiece(prochainePiece, 20) : null;
+            // 3. On affiche la pièce suivante avec des briques plus grosses (30 pixels)
+            this.vuePiece = (prochainePiece != null) ? new VuePiece(prochainePiece, 30) : null;
             this.repaint();
         }
         else if (Puits.MODIFICATION_SCORE.equals(event.getPropertyName())) {
@@ -84,39 +82,39 @@ public class PanneauInformation extends JPanel implements PropertyChangeListener
         Graphics2D g2D = (Graphics2D) g.create();
         FontMetrics fm;
 
-        // A. Dessin de la pièce suivante (en haut)
+        // On décale très légèrement la pièce vers le bas pour l'aérer
         if (this.vuePiece != null) {
+            g2D.translate(0, 20);
             this.vuePiece.afficherPiece(g2D);
+            g2D.translate(0, -20);
         }
 
-        // B. Dessin des Statistiques
         g2D.setColor(Color.BLACK);
-        g2D.setFont(new Font("Arial", Font.BOLD, 14));
+        // 4. On utilise une police plus grande (Taille 18)
+        g2D.setFont(new Font("Arial", Font.BOLD, 18));
         fm = g2D.getFontMetrics();
 
         String texteNiveau = "Niveau : " + (this.lignes / 10);
         String texteLignes = "Lignes : " + this.lignes;
         String texteScore = "Score : " + this.score;
 
-        g2D.drawString(texteNiveau, (this.getWidth() - fm.stringWidth(texteNiveau)) / 2, 130);
-        g2D.drawString(texteLignes, (this.getWidth() - fm.stringWidth(texteLignes)) / 2, 150);
-        g2D.drawString(texteScore, (this.getWidth() - fm.stringWidth(texteScore)) / 2, 170);
+        g2D.drawString(texteNiveau, (this.getWidth() - fm.stringWidth(texteNiveau)) / 2, 200);
+        g2D.drawString(texteLignes, (this.getWidth() - fm.stringWidth(texteLignes)) / 2, 230);
+        g2D.drawString(texteScore, (this.getWidth() - fm.stringWidth(texteScore)) / 2, 260);
 
-        // C. NOUVEAU : Dessin du Tableau des Scores
-        g2D.setFont(new Font("Arial", Font.BOLD, 12));
+        g2D.setFont(new Font("Arial", Font.BOLD, 14));
         fm = g2D.getFontMetrics();
         String titreScores = "--- MEILLEURS SCORES ---";
-        g2D.drawString(titreScores, (this.getWidth() - fm.stringWidth(titreScores)) / 2, 230);
+        g2D.drawString(titreScores, (this.getWidth() - fm.stringWidth(titreScores)) / 2, 330);
 
         if (this.meilleursScores != null) {
-            int yScore = 260;
+            int yScore = 370;
             int limite = Math.min(5, this.meilleursScores.size());
             for (int i = 0; i < limite; i++) {
                 GestionnaireScores.EntreeScore entree = this.meilleursScores.get(i);
-                // Affichage formaté : "1. Nom : 1500"
                 String ligneScore = (i + 1) + ". " + entree.nom + " : " + entree.score;
-                g2D.drawString(ligneScore, 15, yScore);
-                yScore += 25;
+                g2D.drawString(ligneScore, 20, yScore);
+                yScore += 30;
             }
         }
         g2D.dispose();

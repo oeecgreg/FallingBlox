@@ -295,7 +295,7 @@ public class Puits {
      * Cette action n'est autorisée qu'une seule fois par chute.
      */
     public void echangerPiece() {
-        if (!this.echangeAutorise || this.pieceActuelle == null || this.pieceSuivante == null) {
+        if (!this.echangeAutorise || this.pieceActuelle == null || this.pieceSuivante == null || this.isPartieTerminee() || this.isPartieEnPause()) {
             return;
         }
 
