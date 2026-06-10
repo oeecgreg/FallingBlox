@@ -33,8 +33,8 @@ public class UsineDePiece {
             case 2: return new TTetromino(coord, couleur);
             case 3: return new LTetromino(coord, couleur);
             case 4: return new JTetromino(coord, couleur);
-            case 5: return new STetromino(coord, couleur);
-            case 6: return new ZTetromino(coord, couleur);
+            case 5: return new ZTetromino(coord, couleur); // Correction : 5 correspond au ZTetromino (Cyan)
+            case 6: return new STetromino(coord, couleur); // Correction : 6 correspond au STetromino (Violet)
             default: return new OTetromino(coord, couleur); // Sécurité
         }
     }

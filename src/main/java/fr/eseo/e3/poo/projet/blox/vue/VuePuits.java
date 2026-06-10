@@ -15,9 +15,6 @@ import fr.eseo.e3.poo.projet.blox.controleur.PieceRotation;
 import fr.eseo.e3.poo.projet.blox.modele.Puits;
 import fr.eseo.e3.poo.projet.blox.modele.pieces.Piece;
 
-
-// La classe implémente désormais formellement le contrat PropertyChangeListener
-
 /**
  * Classe servant à l'affichage du puits à l'aide de JPanel, inclue également des Listeners.
  */
@@ -196,6 +193,12 @@ public class VuePuits extends JPanel implements PropertyChangeListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        // --- CORRECTION DU BUG NULLPOINTEREXCEPTION ---
+        if (this.puits == null) {
+            return;
+        }
+        // ----------------------------------------------
 
         Graphics2D g2D = (Graphics2D) g.create();
         g2D.setColor(Color.LIGHT_GRAY);
